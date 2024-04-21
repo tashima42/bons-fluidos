@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -38,22 +37,11 @@ func (c *Controller) ValidateToken(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
-	slog.Info(requestID + ": starting transaction")
-	tx, err := c.DB.BeginTxx(ctx.Context(), &sql.TxOptions{})
-	if err != nil {
-		return err
-	}
-
 	slog.Info(requestID + ": getting user")
-	user, err := database.GetUserByIDTxx(tx, ac.User.ID)
+	user, err := database.GetUserByID(c.DB, ac.User.ID)
 	if err != nil {
-		return errors.New(err.Error() + ": " + tx.Rollback().Error())
+		return errors.New(err.Error())
 	}
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
 	slog.Info(requestID + ": seting user on local variable")
 	ctx.Locals("user", user)
 

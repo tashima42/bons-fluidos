@@ -32,9 +32,9 @@ func (c *Controller) CreateEvent(ctx *fiber.Ctx) error {
 	slog.Info(requestID + ": creating event")
 	if err := database.CreateEventTxx(tx, &event); err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "no events found")
+			return fiber.NewError(http.StatusNotFound, "no events found"+": "+tx.Rollback().Error())
 		}
-		return err
+		return errors.New(err.Error() + ": " + tx.Rollback().Error())
 	}
 	if err := tx.Commit(); err != nil {
 		return err
@@ -159,9 +159,9 @@ func (c *Controller) DeleteEvent(ctx *fiber.Ctx) error {
 	err = database.DeleteEventTxx(tx, eventID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "event not found: "+eventID)
+			return fiber.NewError(http.StatusNotFound, "event not found: "+eventID+": "+tx.Rollback().Error())
 		}
-		return err
+		return errors.New(err.Error() + ": " + tx.Rollback().Error())
 	}
 	if err := tx.Commit(); err != nil {
 		return err

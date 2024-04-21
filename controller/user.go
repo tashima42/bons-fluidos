@@ -46,7 +46,7 @@ func (c *Controller) SignIn(ctx *fiber.Ctx) error {
 		if !strings.Contains(err.Error(), "no rows in result set") {
 			return errors.New(err.Error() + ": " + tx.Rollback().Error())
 		}
-		return fiber.NewError(http.StatusNotFound, "email "+s.Email+" not found")
+		return fiber.NewError(http.StatusNotFound, "email "+s.Email+" not found: "+tx.Rollback().Error())
 	}
 	if err := tx.Commit(); err != nil {
 		return err
@@ -105,7 +105,7 @@ func (c *Controller) CreateUser(ctx *fiber.Ctx) error {
 
 	slog.Info(requestID + ": creating user")
 	if err := database.CreateUserTxx(tx, user); err != nil {
-		return err
+		return errors.New(err.Error() + ": " + tx.Rollback().Error())
 	}
 	if err := tx.Commit(); err != nil {
 		return err

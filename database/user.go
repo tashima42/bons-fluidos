@@ -34,10 +34,10 @@ func GetUserByEmailTxx(tx *sqlx.Tx, email string) (*User, error) {
 	return &u, nil
 }
 
-func GetUserByIDTxx(tx *sqlx.Tx, id string) (*User, error) {
+func GetUserByID(db *sqlx.DB, id string) (*User, error) {
 	var u User
 	query := "SELECT id, name, email, password, role, created_at, updated_at FROM users WHERE id=$1 LIMIT 1;"
-	err := tx.Get(&u, query, id)
+	err := db.Get(&u, query, id)
 	if err != nil {
 		return nil, err
 	}
