@@ -48,6 +48,9 @@ func (c *Controller) SignIn(ctx *fiber.Ctx) error {
 		}
 		return fiber.NewError(http.StatusNotFound, "email "+s.Email+" not found")
 	}
+  if err := tx.Commit(); err != nil {
+    return err
+  }
 
 	slog.Info(requestID + ": checking password")
 	if !hash.CheckPassword(user.Password, s.Password) {
@@ -78,7 +81,7 @@ func (c *Controller) CreateUser(ctx *fiber.Ctx) error {
 	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
 	var user *database.User
 	slog.Info(requestID + ": unmarshal request body")
-	if err := json.Unmarshal(ctx.Body(), user); err != nil {
+	if err := json.Unmarshal(ctx.Body(), &user); err != nil {
 		return err
 	}
 
