@@ -17,10 +17,10 @@ type User struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updatedAt"`
 }
 
-func CreateUserTxx(tx *sqlx.Tx, u *User) error {
+func CreateUser(db *sqlx.DB, u *User) error {
 	id := uuid.New()
 	query := "INSERT INTO users(id, role, name, email, password) VALUES($1, $2, $3, $4, $5);"
-	_, err := tx.Exec(query, id, u.Role, u.Name, u.Email, u.Password)
+	_, err := db.Exec(query, id, u.Role, u.Name, u.Email, u.Password)
 	return err
 }
 

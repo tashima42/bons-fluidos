@@ -90,12 +90,6 @@ func (c *Controller) CreateUser(ctx *fiber.Ctx) error {
 		return fiber.NewError(http.StatusBadRequest, err.Error())
 	}
 
-	slog.Info(requestID + ": starting transaction")
-	tx, err := c.DB.BeginTxx(ctx.Context(), &sql.TxOptions{})
-	if err != nil {
-		return err
-	}
-
 	slog.Info(requestID + ": hashing password")
 	hashedPassword, err := hash.Password(user.Password)
 	if err != nil {
@@ -104,11 +98,8 @@ func (c *Controller) CreateUser(ctx *fiber.Ctx) error {
 	user.Password = hashedPassword
 
 	slog.Info(requestID + ": creating user")
-	if err := database.CreateUserTxx(tx, user); err != nil {
-		return errors.New(err.Error() + ": " + tx.Rollback().Error())
-	}
-	if err := tx.Commit(); err != nil {
-		return err
+	if err := database.CreateUser(c.DB, user); err != nil {
+		return errors.New(err.Error())
 	}
 	slog.Info(requestID + ": user created")
 	return ctx.JSON(map[string]interface{}{"success": true})
