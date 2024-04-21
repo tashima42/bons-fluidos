@@ -37,16 +37,20 @@ func server() error {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
+	// Unauthenticated User Routes
 	app.Post("/user", cr.CreateUser)
 	app.Post("/user/signin", cr.SignIn)
 	// Routes defined after this need authentication
 	app.Use(cr.ValidateToken)
+	// User routes
 	app.Get("/user/me", cr.Me)
+	app.Post("/user/signout", cr.SignOut)
+	// Event routes
 	app.Post("/event", cr.CreateEvent)
 	app.Get("/events", cr.GetEvents)
-	app.Get("event/:event_id", cr.GetEventByID)
-	app.Post("event/:event_id/volunteer", cr.AddVolunteerToEvent)
-	app.Get("event/:event_id/volunteers", cr.EventVolunteers)
+	app.Get("/event/:event_id", cr.GetEventByID)
+	app.Post("/event/:event_id/volunteer", cr.AddVolunteerToEvent)
+	app.Get("/event/:event_id/volunteers", cr.EventVolunteers)
 
 	return app.Listen(":" + portFromEnv())
 }
@@ -66,10 +70,9 @@ func jwtSecretFromEnv() (string, error) {
 }
 
 func portFromEnv() string {
-  port := os.Getenv("PORT")
-  if port == "" {
-    return "3000"
-  }
-  return port
+	port := os.Getenv("PORT")
+	if port == "" {
+		return "3000"
+	}
+	return port
 }
-

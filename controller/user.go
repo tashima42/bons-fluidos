@@ -48,9 +48,9 @@ func (c *Controller) SignIn(ctx *fiber.Ctx) error {
 		}
 		return fiber.NewError(http.StatusNotFound, "email "+s.Email+" not found")
 	}
-  if err := tx.Commit(); err != nil {
-    return err
-  }
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
 	slog.Info(requestID + ": checking password")
 	if !hash.CheckPassword(user.Password, s.Password) {
@@ -71,6 +71,7 @@ func (c *Controller) SignIn(ctx *fiber.Ctx) error {
 	cookie.Name = "auth-token"
 	cookie.Value = jwt
 	cookie.Expires = time.Now().Add(time.Hour * 24)
+	cookie.HTTPOnly = true
 	ctx.Cookie(cookie)
 
 	return ctx.JSON(map[string]interface{}{"token": jwt})
@@ -117,4 +118,14 @@ func (c *Controller) Me(ctx *fiber.Ctx) error {
 	user := ctx.Locals("user").(*database.User)
 	user.Password = ""
 	return ctx.JSON(user)
+}
+
+func (c *Controller) SignOut(ctx *fiber.Ctx) error {
+	cookie := new(fiber.Cookie)
+	cookie.Name = "auth-token"
+	cookie.Value = ""
+	cookie.Expires = time.Now().Add(-time.Hour * 24)
+	cookie.HTTPOnly = true
+	ctx.Cookie(cookie)
+	return ctx.JSON(map[string]interface{}{"success": true})
 }

@@ -1,3 +1,16 @@
 # bons-fluidos
 
-Postman Collection: https://www.postman.com/qrestoque/workspace/pedro-tashima-s-public-workspace/folder/13233153-b451d1de-4c46-43c3-8926-f0aa1ef634c7?action=share&creator=13233153&ctx=documentation
+Postman Collection: https://www.postman.com/pedrotashima/workspace/pedro-tashima-s-public-workspace/collection/13233153-8474c0a5-65c4-4f4b-b8c3-c567700eab48?action=share&creator=13233153
+
+Backend para o aplicativo Bons Fluidos
+
+## Desenvolvimento
+
+Database: SQLite
+
+```
+export DATABASE_PATH=./bons_fluidos.db
+export JWT_SECRET=secret
+export PORT=3000
+go run .
+```
