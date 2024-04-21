@@ -1,4 +1,4 @@
-CREATE TABLE "volunteer" (
+CREATE TABLE "volunteers" (
   "id" integer PRIMARY KEY,
   "event_id" INTEGER NOT NULL,
   "name" TEXT NOT NULL,
