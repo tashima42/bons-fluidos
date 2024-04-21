@@ -48,7 +48,7 @@ func server() error {
 	app.Post("event/:event_id/volunteer", cr.AddVolunteerToEvent)
 	app.Get("event/:event_id/volunteers", cr.EventVolunteers)
 
-	return app.Listen(":3000")
+	return app.Listen(":" + portFromEnv())
 }
 
 func main() {
@@ -64,3 +64,12 @@ func jwtSecretFromEnv() (string, error) {
 	}
 	return secret, nil
 }
+
+func portFromEnv() string {
+  port := os.Getenv("PORT")
+  if port == "" {
+    return "3000"
+  }
+  return port
+}
+
