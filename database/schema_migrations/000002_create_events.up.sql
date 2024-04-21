@@ -1,5 +1,5 @@
 CREATE TABLE "events" (
-  "id" INTEGER PRIMARY KEY,
+  "id" TEXT PRIMARY KEY NOT NULL,
   "name" TEXT NOT NULL,
   "description" TEXT NOT NULL,
   "location" TEXT NOT NULL,

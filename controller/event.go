@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tashima42/bons-fluidos/database"
@@ -32,6 +31,9 @@ func (c *Controller) CreateEvent(ctx *fiber.Ctx) error {
 	}
 	slog.Info(requestID + ": creating event")
 	if err := database.CreateEventTxx(tx, &event); err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.NewError(http.StatusNotFound, "no events found")
+		}
 		return err
 	}
 	if err := tx.Commit(); err != nil {
@@ -43,21 +45,16 @@ func (c *Controller) CreateEvent(ctx *fiber.Ctx) error {
 
 func (c *Controller) GetEventByID(ctx *fiber.Ctx) error {
 	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
-	eventIDParam := ctx.Params("event_id")
-	slog.Info(requestID + ": checking event_id " + eventIDParam)
-	if eventIDParam == "" || eventIDParam == ":event_id" {
+	eventID := ctx.Params("event_id")
+	slog.Info(requestID + ": checking event_id " + eventID)
+	if eventID == "" || eventID == ":event_id" {
 		return fiber.NewError(http.StatusBadRequest, "missing event_id path param")
-	}
-	slog.Info(requestID + ": converting event_id to int")
-	eventID, err := strconv.Atoi(eventIDParam)
-	if err != nil {
-		return err
 	}
 	slog.Info(requestID + ": getting event")
 	event, err := database.GetEventByID(c.DB, eventID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "event not found: "+eventIDParam)
+			return fiber.NewError(http.StatusNotFound, "event not found: "+eventID)
 		}
 		return err
 	}
@@ -74,6 +71,9 @@ func (c *Controller) GetEvents(ctx *fiber.Ctx) error {
 		}
 		return err
 	}
+	if len(events) == 0 {
+		return fiber.NewError(http.StatusNotFound, "no events found")
+	}
 	return ctx.JSON(events)
 }
 
@@ -88,21 +88,15 @@ func (c *Controller) AddVolunteerToEvent(ctx *fiber.Ctx) error {
 	if err := c.Validate.Struct(volunteer); err != nil {
 		return fiber.NewError(http.StatusBadRequest, err.Error())
 	}
-	eventIDParam := ctx.Params("event_id")
-	slog.Info(requestID + ": checking event_id " + eventIDParam)
-	if eventIDParam == "" || eventIDParam == ":event_id" {
+	eventID := ctx.Params("event_id")
+	slog.Info(requestID + ": checking event_id " + eventID)
+	if eventID == "" || eventID == ":event_id" {
 		return fiber.NewError(http.StatusBadRequest, "missing event_id path param")
 	}
-	slog.Info(requestID + ": converting event_id to int")
-	eventID, err := strconv.Atoi(eventIDParam)
-	if err != nil {
-		return err
-	}
 	slog.Info(requestID + ": getting event")
-	_, err = database.GetEventByID(c.DB, eventID)
-	if err != nil {
+	if _, err := database.GetEventByID(c.DB, eventID); err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "event not found: "+eventIDParam)
+			return fiber.NewError(http.StatusNotFound, "event not found: "+eventID)
 		}
 		return err
 	}
@@ -125,33 +119,69 @@ func (c *Controller) AddVolunteerToEvent(ctx *fiber.Ctx) error {
 
 func (c *Controller) EventVolunteers(ctx *fiber.Ctx) error {
 	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
-	eventIDParam := ctx.Params("event_id")
-	slog.Info(requestID + ": checking event_id " + eventIDParam)
-	if eventIDParam == "" || eventIDParam == ":event_id" {
+	eventID := ctx.Params("event_id")
+	slog.Info(requestID + ": checking event_id " + eventID)
+	if eventID == "" || eventID == ":event_id" {
 		return fiber.NewError(http.StatusBadRequest, "missing event_id path param")
 	}
-	slog.Info(requestID + ": converting event_id to int")
-	eventID, err := strconv.Atoi(eventIDParam)
-	if err != nil {
-		return err
-	}
 	slog.Info(requestID + ": getting event")
-	_, err = database.GetEventByID(c.DB, eventID)
-	if err != nil {
+	if _, err := database.GetEventByID(c.DB, eventID); err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "event not found: "+eventIDParam)
+			return fiber.NewError(http.StatusNotFound, "event not found: "+eventID)
 		}
 		return err
 	}
 	volunteers, err := database.GetEventVolunteers(c.DB, eventID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "no volunteers found for event: "+eventIDParam)
+			return fiber.NewError(http.StatusNotFound, "no volunteers found for event: "+eventID)
 		}
 		return err
 	}
 	if len(volunteers) == 0 {
-		return fiber.NewError(http.StatusNotFound, "no volunteers found for event: "+eventIDParam)
+		return fiber.NewError(http.StatusNotFound, "no volunteers found for event: "+eventID)
 	}
 	return ctx.JSON(volunteers)
+}
+
+func (c *Controller) DeleteEvent(ctx *fiber.Ctx) error {
+	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
+	eventID := ctx.Params("event_id")
+	slog.Info(requestID + ": checking event_id " + eventID)
+	if eventID == "" || eventID == ":event_id" {
+		return fiber.NewError(http.StatusBadRequest, "missing event_id path param")
+	}
+	slog.Info(requestID + ": deleting event")
+	tx, err := c.DB.BeginTxx(ctx.Context(), &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	err = database.DeleteEventTxx(tx, eventID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.NewError(http.StatusNotFound, "event not found: "+eventID)
+		}
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	return ctx.JSON(map[string]bool{"success": true})
+}
+
+func (c *Controller) RemoveVolunteerFromEvent(ctx *fiber.Ctx) error {
+	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
+	volunteerID := ctx.Params("volunteer_id")
+	slog.Info(requestID + ": checking volunteer_id " + volunteerID)
+	if volunteerID == "" || volunteerID == ":volunteer_id" {
+		return fiber.NewError(http.StatusBadRequest, "missing volunteer_id path param")
+	}
+	slog.Info(requestID + ": deleting event volunteer")
+	if err := database.DeleteEventVolunteerTxx(c.DB, volunteerID); err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.NewError(http.StatusNotFound, "volunteer not found: "+volunteerID)
+		}
+		return err
+	}
+	return ctx.JSON(map[string]bool{"success": true})
 }

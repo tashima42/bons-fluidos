@@ -3,11 +3,12 @@ package database
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
 type User struct {
-	ID        int       `db:"id" json:"id"`
+	ID        string    `db:"id" json:"id"`
 	Name      string    `db:"name" json:"name" validate:"required"`
 	Email     string    `db:"email" json:"email" validate:"required,email"`
 	Password  string    `db:"password" json:"password,omitempty" validate:"required"`
@@ -17,8 +18,9 @@ type User struct {
 }
 
 func CreateUserTxx(tx *sqlx.Tx, u *User) error {
-	query := "INSERT INTO users(role, name, email, password) VALUES($1, $2, $3, $4);"
-	_, err := tx.Exec(query, u.Role, u.Name, u.Email, u.Password)
+	id := uuid.New()
+	query := "INSERT INTO users(id, role, name, email, password) VALUES($1, $2, $3, $4, $5);"
+	_, err := tx.Exec(query, id, u.Role, u.Name, u.Email, u.Password)
 	return err
 }
 
@@ -32,7 +34,7 @@ func GetUserByEmailTxx(tx *sqlx.Tx, email string) (*User, error) {
 	return &u, nil
 }
 
-func GetUserByIDTxx(tx *sqlx.Tx, id int) (*User, error) {
+func GetUserByIDTxx(tx *sqlx.Tx, id string) (*User, error) {
 	var u User
 	query := "SELECT id, name, email, password, role, created_at, updated_at FROM users WHERE id=$1 LIMIT 1;"
 	err := tx.Get(&u, query, id)

@@ -9,8 +9,8 @@ import (
 
 type AuthClaims struct {
 	User struct {
-		ID    int            `json:"id"`
-		Email string            `json:"email"`
+		ID    string `json:"id"`
+		Email string `json:"email"`
 		Role  string `json:"role"`
 	} `json:"user"`
 	jwt.RegisteredClaims
@@ -40,4 +40,3 @@ func ParseJWT(secret []byte, tokenString string) (*AuthClaims, error) {
 	}
 	return nil, errors.New("failed to parse auth claims")
 }
-

@@ -1,5 +1,5 @@
 CREATE TABLE "volunteers" (
-  "id" integer PRIMARY KEY,
+  "id" TEXT PRIMARY KEY NOT NULL,
   "event_id" INTEGER NOT NULL,
   "name" TEXT NOT NULL,
   "tasks" TEXT NOT NULL,

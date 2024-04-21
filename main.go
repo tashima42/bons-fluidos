@@ -51,6 +51,8 @@ func server() error {
 	app.Get("/event/:event_id", cr.GetEventByID)
 	app.Post("/event/:event_id/volunteer", cr.AddVolunteerToEvent)
 	app.Get("/event/:event_id/volunteers", cr.EventVolunteers)
+	app.Delete("/event/:event_id", cr.DeleteEvent)
+	app.Delete("/event/volunteer/:volunteer_id", cr.RemoveVolunteerFromEvent)
 
 	return app.Listen(":" + portFromEnv())
 }
