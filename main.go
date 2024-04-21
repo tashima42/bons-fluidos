@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/tashima42/bons-fluidos/controller"
 	"github.com/tashima42/bons-fluidos/database"
@@ -27,6 +28,9 @@ func server() error {
 		Validate:  validator.New(validator.WithRequiredStructEnabled()),
 	}
 	app := fiber.New(fiber.Config{ErrorHandler: cr.ErrorHandler})
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+	}))
 	app.Use(requestid.New())
 
 	// ROUTES
