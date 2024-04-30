@@ -25,15 +25,6 @@ type Event struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updatedAt"`
 }
 
-type Volunteer struct {
-	ID        string    `db:"id" json:"id"`
-	EventID   string    `db:"event_id" json:"eventId"`
-	Name      string    `db:"name" json:"name" validate:"required"`
-	Tasks     string    `db:"tasks" json:"tasks" validate:"required"`
-	CreatedAt time.Time `db:"created_at" json:"createdAt"`
-	UpdatedAt time.Time `db:"updated_at" json:"updatedAt"`
-}
-
 func CreateEventTxx(tx *sqlx.Tx, e *Event) error {
 	id := uuid.New()
 	query := "INSERT INTO events(id, name, description, location, start_date, end_date, speaker_name, speaker_phone_number, speaker_email, speaker_description) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);"
@@ -72,19 +63,19 @@ func GetEvents(db *sqlx.DB) ([]Event, error) {
 	return events, nil
 }
 
-func GetEventVolunteers(db *sqlx.DB, eventID string) ([]Volunteer, error) {
-	volunteers := make([]Volunteer, 0)
-	query := "SELECT id, event_id, name, tasks, created_at, updated_at FROM volunteers WHERE event_id=?;"
+func GetEventVolunteers(db *sqlx.DB, eventID string) ([]User, error) {
+	volunteers := make([]User, 0)
+	query := "SELECT u.id, u.name, u.email, u.role, u.created_at, u.updated_at FROM user_event e JOIN users u ON e.user_id = u.id WHERE e.event_id=$1;"
 	rows, err := db.Query(query, eventID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		var v Volunteer
-		if err := rows.Scan(&v.ID, &v.EventID, &v.Name, &v.Tasks, &v.CreatedAt, &v.UpdatedAt); err != nil {
+		var u User
+		if err := rows.Scan(&u.ID, &u.Name, &u.Email, &u.Role, &u.CreatedAt, &u.UpdatedAt); err != nil {
 			return nil, err
 		}
-		volunteers = append(volunteers, v)
+		volunteers = append(volunteers, u)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -92,15 +83,15 @@ func GetEventVolunteers(db *sqlx.DB, eventID string) ([]Volunteer, error) {
 	return volunteers, nil
 }
 
-func CreateEventVolunteerTxx(tx *sqlx.Tx, v *Volunteer) error {
+func CreateEventVolunteer(db *sqlx.DB, eventID, userID string) error {
 	id := uuid.New()
-	query := "INSERT INTO volunteers(id, event_id, name, tasks) VALUES($1, $2, $3, $4);"
-	_, err := tx.Exec(query, id, v.EventID, v.Name, v.Tasks)
+	query := "INSERT INTO user_event(id, event_id, user_id) VALUES($1, $2, $3);"
+	_, err := db.Exec(query, id, eventID, userID)
 	return err
 }
 
 func DeleteEventTxx(tx *sqlx.Tx, eventID string) error {
-	volunteersQuery := "DELETE FROM volunteers WHERE event_id=$1;"
+	volunteersQuery := "DELETE FROM user_event WHERE event_id=$1;"
 	_, err := tx.Exec(volunteersQuery, eventID)
 	if err != nil {
 		return err
@@ -120,9 +111,9 @@ func DeleteEventTxx(tx *sqlx.Tx, eventID string) error {
 	return nil
 }
 
-func DeleteEventVolunteerTxx(db *sqlx.DB, volunteerID string) error {
-	query := "DELETE FROM volunteers WHERE id=$1;"
-	result, err := db.Exec(query, volunteerID)
+func DeleteEventVolunteer(db *sqlx.DB, eventID, userID string) error {
+	query := "DELETE FROM user_event WHERE event_id=$1 AND user_id=$2;"
+	result, err := db.Exec(query, eventID, userID)
 	if err != nil {
 		return err
 	}
@@ -135,3 +126,4 @@ func DeleteEventVolunteerTxx(db *sqlx.DB, volunteerID string) error {
 	}
 	return nil
 }
+

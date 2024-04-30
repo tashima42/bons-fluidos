@@ -1,10 +1,10 @@
-CREATE TABLE "volunteers" (
+CREATE TABLE "user_event" (
   "id" TEXT PRIMARY KEY NOT NULL,
   "event_id" INTEGER NOT NULL,
-  "name" TEXT NOT NULL,
-  "tasks" TEXT NOT NULL,
+  "user_id" INTEGER NOT NULL,
   "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  FOREIGN KEY('event_id') REFERENCES 'events'('id')
+  FOREIGN KEY('event_id') REFERENCES 'events'('id'),
+  FOREIGN KEY('user_id') REFERENCES 'users'('id')
 );
