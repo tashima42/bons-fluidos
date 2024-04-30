@@ -64,13 +64,19 @@ func server() error {
 	//    Remove volunteer from event
 	app.Delete("/event/:event_id/volunteer/:volunteer_id", cr.RemoveVolunteerFromEvent)
 
+	// Volunteer Forms
+	//    Create Volunteer Form
+	app.Post("/forms/volunteer", cr.CreateVolunteerForm)
+	//    Get Volunteer Forms
+	app.Get("/forms/volunteer", cr.GetVolunteerForms)
+
 	return app.Listen(":" + portFromEnv())
 }
 
 func jwtSecretFromEnv() (string, error) {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
-		return "", errors.New("Env Var JWT_SECRET is required")
+		return "", errors.New("env var JWT_SECRET is required")
 	}
 	return secret, nil
 }
@@ -82,4 +88,3 @@ func portFromEnv() string {
 	}
 	return port
 }
-
