@@ -37,12 +37,13 @@ func server() error {
 		return c.SendString("Hello, World!")
 	})
 	// Unauthenticated User Routes
-	//    Create User
-	app.Post("/user", cr.CreateUser)
 	//    Signin User
 	app.Post("/user/signin", cr.SignIn)
+
 	// Routes defined after this need authentication
 	app.Use(cr.ValidateToken)
+	//    Create User
+	app.Post("/user", cr.ValidateRoleAdmin, cr.CreateUser)
 	// User routes
 	//    Get Logedin User Information
 	app.Get("/user/me", cr.Me)

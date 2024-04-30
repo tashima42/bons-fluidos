@@ -47,6 +47,18 @@ func (c *Controller) ValidateToken(ctx *fiber.Ctx) error {
 
 	return ctx.Next()
 }
+
+func (c *Controller) ValidateRoleAdmin(ctx *fiber.Ctx) error {
+	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
+	slog.Info(requestID + ": getting local user")
+	user := ctx.Locals("user").(*database.User)
+
+	if user.Role != "admin" {
+		return fiber.NewError(http.StatusForbidden, "only admins can perform this action")
+	}
+	return ctx.Next()
+}
+
 func (cr *Controller) ErrorHandler(ctx *fiber.Ctx, err error) error {
 	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
 	slog.Error(requestID + ": " + err.Error())

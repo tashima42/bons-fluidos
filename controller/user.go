@@ -90,6 +90,10 @@ func (c *Controller) CreateUser(ctx *fiber.Ctx) error {
 		return fiber.NewError(http.StatusBadRequest, err.Error())
 	}
 
+	if user.Role == "admin" || user.Role == "volunteer" {
+		return fiber.NewError(http.StatusBadRequest, "role must be either admin or volunteer")
+	}
+
 	slog.Info(requestID + ": hashing password")
 	hashedPassword, err := hash.Password(user.Password)
 	if err != nil {
