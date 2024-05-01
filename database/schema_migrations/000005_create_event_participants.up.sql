@@ -1,10 +1,10 @@
-CREATE TABLE "user_event" (
+CREATE TABLE "event_participants" (
   "id" TEXT PRIMARY KEY NOT NULL,
   "event_id" TEXT NOT NULL,
-  "user_id" TEXT NOT NULL,
+  "name" TEXT NOT NULL,
+  "ra" TEXT NOT NULL,
   "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  FOREIGN KEY('event_id') REFERENCES 'events'('id'),
-  FOREIGN KEY('user_id') REFERENCES 'users'('id')
+  FOREIGN KEY('event_id') REFERENCES 'events'('id')
 );

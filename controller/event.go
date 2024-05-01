@@ -191,3 +191,76 @@ func (c *Controller) RemoveVolunteerFromEvent(ctx *fiber.Ctx) error {
 	}
 	return ctx.JSON(map[string]bool{"success": true})
 }
+
+func (c *Controller) AddParticipantToEvent(ctx *fiber.Ctx) error {
+	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
+	var eventParticipant database.EventParticipant
+	slog.Info(requestID + ": unmarshal request body")
+	if err := json.Unmarshal(ctx.Body(), &eventParticipant); err != nil {
+		return err
+	}
+
+	slog.Info(requestID + ": validating request body")
+	if err := c.Validate.Struct(eventParticipant); err != nil {
+		return fiber.NewError(http.StatusBadRequest, err.Error())
+	}
+
+	slog.Info(requestID + ": validating event id")
+	if _, err := database.GetEventByID(c.DB, eventParticipant.EventID); err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.NewError(http.StatusNotFound, "event doesn't exists")
+		}
+		return err
+	}
+
+	slog.Info(requestID + ": creating event")
+	if err := database.CreateEventParticipant(c.DB, &eventParticipant); err != nil {
+		return err
+	}
+	slog.Info(requestID + ": event created")
+	return ctx.JSON(map[string]interface{}{"success": true})
+}
+
+func (c *Controller) ListEventParticipants(ctx *fiber.Ctx) error {
+	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
+
+	eventID := ctx.Params("event_id")
+	slog.Info(requestID + ": checking event_id " + eventID)
+	if eventID == "" || eventID == ":event_id" {
+		return fiber.NewError(http.StatusBadRequest, "missing event_id path param")
+	}
+
+	eventParticipants, err := database.GetEventParticipants(c.DB, eventID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.NewError(http.StatusNotFound, "event doesn't exists")
+		}
+		return err
+	}
+	return ctx.JSON(eventParticipants)
+}
+
+func (c *Controller) EventParticipantByRA(ctx *fiber.Ctx) error {
+	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
+
+	eventID := ctx.Params("event_id")
+	slog.Info(requestID + ": checking event_id " + eventID)
+	if eventID == "" || eventID == ":event_id" {
+		return fiber.NewError(http.StatusBadRequest, "missing event_id path param")
+	}
+
+	participantRA := ctx.Params("participant_ra")
+	slog.Info(requestID + ": checking participant_ra " + participantRA)
+	if participantRA == "" || participantRA == ":participant_ra" {
+		return fiber.NewError(http.StatusBadRequest, "missing participant_ra path param")
+	}
+
+	eventParticipant, err := database.GetEventParticipantByRA(c.DB, participantRA, eventID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.NewError(http.StatusNotFound, "event participant doesn't exist")
+		}
+		return err
+	}
+	return ctx.JSON(eventParticipant)
+}

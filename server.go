@@ -64,6 +64,12 @@ func server() error {
 	app.Delete("/event/:event_id", cr.DeleteEvent)
 	//    Remove volunteer from event
 	app.Delete("/event/:event_id/volunteer/:volunteer_id", cr.RemoveVolunteerFromEvent)
+	//    Add participant to event
+	app.Post("/event/participant", cr.AddParticipantToEvent)
+	//    Get event participants
+	app.Get("/event/:event_id/participants", cr.ListEventParticipants)
+	//    Get event participant
+	app.Get("/event/:event_id/participant/:participant_ra", cr.EventParticipantByRA)
 
 	// Volunteer Forms
 	//    Create Volunteer Form

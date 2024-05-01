@@ -25,6 +25,15 @@ type Event struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updatedAt"`
 }
 
+type EventParticipant struct {
+	ID        string    `db:"id" json:"id"`
+	Name      string    `db:"name" json:"name" validate:"required"`
+	RA        string    `db:"ra" json:"ra" validate:"required"`
+	EventID   string    `db:"event_id" json:"event_id" validate:"required"`
+	CreatedAt time.Time `db:"created_at" json:"createdAt"`
+	UpdatedAt time.Time `db:"updated_at" json:"updatedAt"`
+}
+
 func CreateEventTxx(tx *sqlx.Tx, e *Event) error {
 	id := uuid.New()
 	query := "INSERT INTO events(id, name, description, location, start_date, end_date, speaker_name, speaker_phone_number, speaker_email, speaker_description) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);"
@@ -127,3 +136,40 @@ func DeleteEventVolunteer(db *sqlx.DB, eventID, userID string) error {
 	return nil
 }
 
+func CreateEventParticipant(db *sqlx.DB, e *EventParticipant) error {
+	id := uuid.New()
+	query := "INSERT INTO event_participants(id, name, ra, event_id) VALUES($1, $2, $3, $4);"
+	_, err := db.Exec(query, id, e.Name, e.RA, e.EventID)
+	return err
+}
+
+func GetEventParticipants(db *sqlx.DB, eventID string) ([]EventParticipant, error) {
+	evs := make([]EventParticipant, 0)
+	query := "SELECT id, name, ra, event_id, created_at, updated_at FROM event_participants WHERE event_id=$1;"
+	rows, err := db.Query(query, eventID)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var e EventParticipant
+		if err := rows.Scan(&e.ID, &e.Name, &e.RA, &e.EventID, &e.CreatedAt, &e.UpdatedAt); err != nil {
+			return nil, err
+		}
+		evs = append(evs, e)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return evs, nil
+}
+
+func GetEventParticipantByRA(db *sqlx.DB, ra string, eventID string) (*EventParticipant, error) {
+	var e EventParticipant
+	query := "SELECT id, name, ra, event_id, created_at, updated_at FROM event_participants WHERE ra=$1 AND event_id=$2;"
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	err = stmt.QueryRow(ra, eventID).Scan(&e.ID, &e.Name, &e.RA, &e.EventID, &e.CreatedAt, &e.UpdatedAt)
+	return &e, err
+}
