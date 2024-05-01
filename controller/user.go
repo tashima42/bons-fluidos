@@ -86,11 +86,13 @@ func (c *Controller) CreateUser(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	slog.Info(requestID + ": validating struct")
 	if err := c.Validate.Struct(user); err != nil {
 		return fiber.NewError(http.StatusBadRequest, err.Error())
 	}
 
-	if user.Role == "admin" || user.Role == "volunteer" {
+	slog.Info(requestID + ": validating role " + user.Role)
+	if user.Role != "admin" && user.Role != "volunteer" {
 		return fiber.NewError(http.StatusBadRequest, "role must be either admin or volunteer")
 	}
 
