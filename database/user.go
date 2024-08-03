@@ -24,6 +24,12 @@ func CreateUser(db *sqlx.DB, u *User) error {
 	return err
 }
 
+func UpdatePassword(db *sqlx.DB, password, id string) error {
+  query := "UPDATE users SET password = $1, updated_at = $2 WHERE id = $3;"
+  _, err := db.Exec(query, password, time.Now(), id)
+  return err
+}
+
 func GetUserByEmailTxx(tx *sqlx.Tx, email string) (*User, error) {
 	var u User
 	query := "SELECT id, name, email, password, role, created_at, updated_at FROM users WHERE email=$1 LIMIT 1;"

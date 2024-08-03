@@ -47,6 +47,8 @@ func server() error {
 	// User routes
 	//    Get Logedin User Information
 	app.Get("/user/me", cr.Me)
+  //    Update user password
+  app.Patch("/user/password", cr.ChangePassword)
 	//    Signout user
 	app.Post("/user/signout", cr.SignOut)
 	// Event routes

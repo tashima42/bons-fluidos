@@ -20,6 +20,11 @@ type userSignInRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type changePasswordRequest struct {
+  Password string `json:"password" validate:"required"`
+  NewPassword string `json:"newPassword" validate:"required"`
+}
+
 func (c *Controller) SignIn(ctx *fiber.Ctx) error {
 	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
 	s := &userSignInRequest{}
@@ -44,9 +49,11 @@ func (c *Controller) SignIn(ctx *fiber.Ctx) error {
 	if err != nil {
 		slog.Info(requestID + ": error: " + err.Error())
 		if !strings.Contains(err.Error(), "no rows in result set") {
-			return errors.New(err.Error() + ": " + tx.Rollback().Error())
+      tx.Rollback()
+			return fiber.NewError(http.StatusInternalServerError, err.Error())
 		}
-		return fiber.NewError(http.StatusNotFound, "email "+s.Email+" not found: "+tx.Rollback().Error())
+    tx.Rollback()
+    return fiber.NewError(http.StatusNotFound, "email not found")
 	}
 	if err := tx.Commit(); err != nil {
 		return err
@@ -108,6 +115,44 @@ func (c *Controller) CreateUser(ctx *fiber.Ctx) error {
 		return errors.New(err.Error())
 	}
 	slog.Info(requestID + ": user created")
+	return ctx.JSON(map[string]interface{}{"success": true})
+}
+
+func (c *Controller) ChangePassword(ctx *fiber.Ctx) error {
+	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
+	user := ctx.Locals("user").(*database.User)
+	s := &changePasswordRequest{}
+	slog.Info(requestID + ": unmarshal request body")
+	if err := json.Unmarshal(ctx.Body(), s); err != nil {
+		return err
+	}
+
+	slog.Info(requestID + ": validate body")
+	if err := c.Validate.Struct(s); err != nil {
+		return fiber.NewError(http.StatusBadRequest, err.Error())
+	}
+
+	slog.Info(requestID + ": get user by id")
+  u, err := database.GetUserByID(c.DB, user.ID)
+  if err != nil {
+    return fiber.NewError(http.StatusInternalServerError, "failed to get user")
+  }
+
+	slog.Info(requestID + ": checking password")
+	if !hash.CheckPassword(u.Password, s.Password) {
+		return fiber.NewError(http.StatusBadRequest, "incorrect password")
+	}
+
+	slog.Info(requestID + ": hashing password")
+	hashedPassword, err := hash.Password(s.NewPassword)
+	if err != nil {
+		return err
+	}
+
+  if err := database.UpdatePassword(c.DB, hashedPassword, user.ID); err != nil {
+    return fiber.NewError(http.StatusInternalServerError, "failed to update password")
+  }
+	slog.Info(requestID + ": password updated")
 	return ctx.JSON(map[string]interface{}{"success": true})
 }
 
