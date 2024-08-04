@@ -24,7 +24,7 @@ func (c *Controller) ValidateToken(ctx *fiber.Ctx) error {
 	if token == "" {
 		authorizationHeader := ctx.GetReqHeaders()["authorization"]
 		if len(authorizationHeader) <= 0 {
-			return errors.New("missing authorization header value")
+			return fiber.NewError(http.StatusUnauthorized, "missing authorization header value")
 		}
 		token = authorizationHeader[0]
 	}

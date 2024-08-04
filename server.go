@@ -40,36 +40,34 @@ func server() error {
 	//    Signin User
 	app.Post("/user/signin", cr.SignIn)
 
-	// Routes defined after this need authentication
-	app.Use(cr.ValidateToken)
 	//    Create User
-	app.Post("/user", cr.ValidateRoleAdmin, cr.CreateUser)
+	app.Post("/user", cr.ValidateToken, cr.ValidateRoleAdmin, cr.CreateUser)
 	// User routes
 	//    Get Logedin User Information
-	app.Get("/user/me", cr.Me)
+	app.Get("/user/me", cr.ValidateToken, cr.Me)
   //    Update user password
-  app.Patch("/user/password", cr.ChangePassword)
+  app.Patch("/user/password", cr.ValidateToken, cr.ChangePassword)
 	//    Signout user
-	app.Post("/user/signout", cr.SignOut)
+	app.Post("/user/signout", cr.ValidateToken, cr.SignOut)
 	// Event routes
 	//    Create new event
-	app.Post("/event", cr.CreateEvent)
+	app.Post("/event", cr.ValidateToken, cr.ValidateRoleAdmin, cr.CreateEvent)
 	//    Get all events
 	app.Get("/events", cr.GetEvents)
 	//    Get one event
 	app.Get("/event/:event_id", cr.GetEventByID)
 	//    Add Volunteer to event
-	app.Post("/event/:event_id/volunteer/:volunteer_id", cr.AddVolunteerToEvent)
+	app.Post("/event/:event_id/volunteer/:volunteer_id", cr.ValidateToken, cr.ValidateRoleAdmin, cr.AddVolunteerToEvent)
 	//    Get all event volunteers
-	app.Get("/event/:event_id/volunteers", cr.EventVolunteers)
+	app.Get("/event/:event_id/volunteers", cr.ValidateToken, cr.EventVolunteers)
 	//    Delete event
-	app.Delete("/event/:event_id", cr.DeleteEvent)
+	app.Delete("/event/:event_id", cr.ValidateToken, cr.ValidateRoleAdmin, cr.DeleteEvent)
 	//    Remove volunteer from event
-	app.Delete("/event/:event_id/volunteer/:volunteer_id", cr.RemoveVolunteerFromEvent)
+	app.Delete("/event/:event_id/volunteer/:volunteer_id", cr.ValidateToken, cr.ValidateRoleAdmin, cr.RemoveVolunteerFromEvent)
 	//    Add participant to event
-	app.Post("/event/participant", cr.AddParticipantToEvent)
+	app.Post("/event/participant", cr.ValidateToken, cr.AddParticipantToEvent)
 	//    Get event participants
-	app.Get("/event/:event_id/participants", cr.ListEventParticipants)
+	app.Get("/event/:event_id/participants", cr.ValidateToken, cr.ListEventParticipants)
 	//    Get event participant
 	app.Get("/event/:event_id/participant/:participant_ra", cr.EventParticipantByRA)
 
@@ -77,7 +75,7 @@ func server() error {
 	//    Create Volunteer Form
 	app.Post("/forms/volunteer", cr.CreateVolunteerForm)
 	//    Get Volunteer Forms
-	app.Get("/forms/volunteer", cr.GetVolunteerForms)
+	app.Get("/forms/volunteer", cr.ValidateToken, cr.GetVolunteerForms)
 
 	return app.Listen(":" + portFromEnv())
 }

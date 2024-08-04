@@ -132,7 +132,7 @@ func (c *Controller) EventVolunteers(ctx *fiber.Ctx) error {
 	volunteers, err := database.GetEventVolunteers(c.DB, eventID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "no volunteers found for event: "+eventID)
+			return fiber.NewError(http.StatusOK, "no volunteers found for event: "+eventID)
 		}
 		return err
 	}
