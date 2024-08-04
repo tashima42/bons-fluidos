@@ -256,6 +256,9 @@ func (c *Controller) EventsByParticipantRA(ctx *fiber.Ctx) error {
 		}
 		return err
 	}
+  if len(eventParticipant) == 0 {
+			return fiber.NewError(http.StatusNotFound, "participant has no events")
+  }
 	return ctx.JSON(eventParticipant)
 }
 
