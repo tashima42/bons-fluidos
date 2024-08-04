@@ -1,3 +1,5 @@
+PRAGMA foreign_keys=ON;
+
 CREATE TABLE "user_event" (
   "id" TEXT PRIMARY KEY NOT NULL,
   "event_id" TEXT NOT NULL,

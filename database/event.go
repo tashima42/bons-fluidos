@@ -163,13 +163,22 @@ func GetEventParticipants(db *sqlx.DB, eventID string) ([]EventParticipant, erro
 	return evs, nil
 }
 
-func GetEventParticipantByRA(db *sqlx.DB, ra string, eventID string) (*EventParticipant, error) {
-	var e EventParticipant
-	query := "SELECT id, name, ra, event_id, created_at, updated_at FROM event_participants WHERE ra=$1 AND event_id=$2;"
-	stmt, err := db.Prepare(query)
+func GetEventParticipantsByRA(db *sqlx.DB, ra string) ([]EventParticipant, error) {
+	evs := make([]EventParticipant, 0)
+	query := "SELECT id, name, ra, event_id, created_at, updated_at FROM event_participants WHERE ra=$1;"
+	rows, err := db.Query(query, ra)
 	if err != nil {
 		return nil, err
 	}
-	err = stmt.QueryRow(ra, eventID).Scan(&e.ID, &e.Name, &e.RA, &e.EventID, &e.CreatedAt, &e.UpdatedAt)
-	return &e, err
+	for rows.Next() {
+		var e EventParticipant
+		if err := rows.Scan(&e.ID, &e.Name, &e.RA, &e.EventID, &e.CreatedAt, &e.UpdatedAt); err != nil {
+			return nil, err
+		}
+		evs = append(evs, e)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return evs, nil
 }

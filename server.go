@@ -68,8 +68,8 @@ func server() error {
 	app.Post("/event/participant", cr.ValidateToken, cr.AddParticipantToEvent)
 	//    Get event participants
 	app.Get("/event/:event_id/participants", cr.ValidateToken, cr.ListEventParticipants)
-	//    Get event participant
-	app.Get("/event/:event_id/participant/:participant_ra", cr.EventParticipantByRA)
+	//    Get events by participant
+	app.Get("/events/participant/:participant_ra", cr.EventsByParticipantRA)
 
 	// Volunteer Forms
 	//    Create Volunteer Form

@@ -240,14 +240,8 @@ func (c *Controller) ListEventParticipants(ctx *fiber.Ctx) error {
 	return ctx.JSON(eventParticipants)
 }
 
-func (c *Controller) EventParticipantByRA(ctx *fiber.Ctx) error {
+func (c *Controller) EventsByParticipantRA(ctx *fiber.Ctx) error {
 	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
-
-	eventID := ctx.Params("event_id")
-	slog.Info(requestID + ": checking event_id " + eventID)
-	if eventID == "" || eventID == ":event_id" {
-		return fiber.NewError(http.StatusBadRequest, "missing event_id path param")
-	}
 
 	participantRA := ctx.Params("participant_ra")
 	slog.Info(requestID + ": checking participant_ra " + participantRA)
@@ -255,7 +249,7 @@ func (c *Controller) EventParticipantByRA(ctx *fiber.Ctx) error {
 		return fiber.NewError(http.StatusBadRequest, "missing participant_ra path param")
 	}
 
-	eventParticipant, err := database.GetEventParticipantByRA(c.DB, participantRA, eventID)
+	eventParticipant, err := database.GetEventParticipantsByRA(c.DB, participantRA)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.NewError(http.StatusNotFound, "event participant doesn't exist")
@@ -264,3 +258,5 @@ func (c *Controller) EventParticipantByRA(ctx *fiber.Ctx) error {
 	}
 	return ctx.JSON(eventParticipant)
 }
+
+

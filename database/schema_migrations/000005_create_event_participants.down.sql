@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS "volunteer_forms";
+DROP TABLE IF EXISTS "event_participants";
