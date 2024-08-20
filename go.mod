@@ -1,6 +1,6 @@
 module github.com/tashima42/bons-fluidos
 
-go 1.22.1
+go 1.23
 
 require (
 	github.com/go-playground/validator/v10 v10.19.0
