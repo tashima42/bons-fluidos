@@ -6,7 +6,11 @@ export default function Home() {
   return (
     <Flex flexDirection={"row"}>
       <Sidebar />
-      <Flex flexDirection={"column"} backgroundImage={"/img/backg.png"}>
+      <Flex
+        flexDirection={"column"}
+        backgroundImage={"/img/backg.png"}
+        maxWidth={"80%"}
+      >
         <Flex align="flex-end" justify="flex-end" m={5}>
           <Button
             backgroundColor={"transparent"}
