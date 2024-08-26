@@ -3,7 +3,12 @@ import { FaInstagram } from "react-icons/fa";
 
 export default function Sidebar() {
   return (
-    <Box width={"70%"} height={"100vh"} backgroundColor={"#F2B7C5"}>
+    <Box
+      maxWidth={"400px"}
+      height={"100vh"}
+      backgroundColor={"#F2B7C5"}
+      width={"30%"}
+    >
       <Flex
         flexDirection={"column"}
         justify="space-between"
