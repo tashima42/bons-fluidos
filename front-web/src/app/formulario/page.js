@@ -2,9 +2,8 @@
 import Sidebar from "@/components/sidebar";
 import { Flex, Box, Text, Button } from "@chakra-ui/react";
 import { FaUserAlt } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import Calendar from "react-calendar";
 import { FaPlus } from "react-icons/fa6";
 import {
   Modal,
@@ -16,13 +15,18 @@ import {
   Input,
   InputGroup,
   ModalCloseButton,
+  Select,
 } from "@chakra-ui/react";
-import "./style.css";
 
-export default function BFCalendar() {
-  const [value, onChange] = useState(new Date());
+export default function Formulario() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [minDate, setMinDate] = useState("");
+
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
@@ -31,6 +35,13 @@ export default function BFCalendar() {
   const handleCloseModal = () => {
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    const now = new Date();
+    now.setDate(now.getDate() + 14);
+    const minDateString = now.toISOString().slice(0, 16);
+    setMinDate(minDateString);
+  }, []);
 
   return (
     <Flex flexDirection={"row"}>
@@ -57,24 +68,123 @@ export default function BFCalendar() {
           alignItems={"center"}
         >
           <Text mb={4} fontSize={"25px"}>
-            Selecione uma data para criar o{" "}
+            Formulário de{" "}
             <span style={{ color: "#D92353", fontWeight: "bold" }}>
-              evento!
+              inscrição
             </span>
           </Text>
-          <Box
-            backgroundColor={"#FBE8ED"}
-            borderRadius={"15px"}
-            width={"608px"}
-            p={"30px"}
+          <Flex
+            flexDirection={"column"}
+            justifyContent={"center"}
+            width={"40%"}
           >
-            <Calendar
-              onChange={onChange}
-              value={value}
-              locale={"pt-BR"}
-              onClickDay={handleDateClick}
+            <Text mb="8px" textAlign={"left"} pt={"3%"}>
+              Nome completo*
+            </Text>
+            <Input
+              mb={3}
+              placeholder="Nome completo"
+              backgroundColor={"#fff"}
+              _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+              width={"100%"}
+              _focus={{
+                borderColor: "#E11F4C",
+                boxShadow: `0 0 0 1px #E11F4C`,
+              }}
             />
-          </Box>
+
+            <Text mb="8px" textAlign={"left"}>
+              Telefone*
+            </Text>
+            <Input
+              mb={3}
+              placeholder="Telefone"
+              backgroundColor={"#fff"}
+              type="number"
+              _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+              width={"100%"}
+              _focus={{
+                borderColor: "#E11F4C",
+                boxShadow: `0 0 0 1px #E11F4C`,
+              }}
+            />
+
+            <Text mb="8px" textAlign={"left"}>
+              E-mail*
+            </Text>
+            <Input
+              mb={3}
+              placeholder="E-mail"
+              backgroundColor={"#fff"}
+              _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+              width={"100%"}
+              _focus={{
+                borderColor: "#E11F4C",
+                boxShadow: `0 0 0 1px #E11F4C`,
+              }}
+            />
+            <Text mb="8px" textAlign={"left"}>
+              Você quer se inscrever para ser um:
+            </Text>
+            <Select mb={3} onChange={handleSelectChange} value={selectedOption}>
+              <option value="vol">Voluntário</option>
+              <option value="pal">Palestrante</option>
+            </Select>
+
+            {selectedOption === "vol" ? (
+              <>
+                <Button
+                  backgroundColor={"#E11F4C"}
+                  color={"#FFF"}
+                  fontWeight={600}
+                  fontSize={["md", "lg"]}
+                  size={["md", "lg"]}
+                  _hover={{ backgroundColor: "#CC1C45" }}
+                  onClick={handleCloseModal}
+                >
+                  Enviar inscrição
+                </Button>
+              </>
+            ) : (
+              <>
+                <Text mb="8px" textAlign={"left"}>
+                  Título da Palestra*
+                </Text>
+                <Input
+                  mb={3}
+                  placeholder="Título da Palestra"
+                  backgroundColor={"#fff"}
+                  _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+                  width={"100%"}
+                  _focus={{
+                    borderColor: "#E11F4C",
+                    boxShadow: `0 0 0 1px #E11F4C`,
+                  }}
+                />
+                <Text mb="8px" textAlign={"left"}>
+                  Data desejada*
+                </Text>
+                <Input
+                  mb={3}
+                  placeholder="Selecione a data e o horário"
+                  size="md"
+                  type="date"
+                  min={minDate}
+                />
+                <Button
+                  backgroundColor={"#E11F4C"}
+                  color={"#FFF"}
+                  fontWeight={600}
+                  fontSize={["md", "lg"]}
+                  size={["md", "lg"]}
+                  _hover={{ backgroundColor: "#CC1C45" }}
+                  onClick={handleCloseModal}
+                >
+                  Enviar inscrição
+                </Button>
+              </>
+            )}
+          </Flex>
         </Flex>
       </Flex>
 

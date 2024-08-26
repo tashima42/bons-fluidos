@@ -1,10 +1,12 @@
+"use client";
 import { Flex, Box, Button, Image } from "@chakra-ui/react";
 import { FaInstagram } from "react-icons/fa";
+import Link from "next/link";
 
 export default function Sidebar() {
   return (
     <Box
-      maxWidth={"400px"}
+      maxWidth={"345.59px"}
       height={"100vh"}
       backgroundColor={"#F2B7C5"}
       width={"30%"}
@@ -23,28 +25,34 @@ export default function Sidebar() {
           justifySelf={"center"}
         ></Image>
         <Flex flexDirection={"column"} gap={3}>
-          <Button
-            color={"#D92353"}
-            fontSize={["xs", "md", "xl"]}
-            backgroundColor={"transparent"}
-            _hover={{ backgroundColor: "transparent", color: "#D92353" }}
-          >
-            HOME
-          </Button>
-          <Button
-            backgroundColor={"transparent"}
-            fontSize={["xs", "xs", "md", "xl"]}
-            _hover={{ backgroundColor: "transparent", color: "#D92353" }}
-          >
-            PALESTRAS
-          </Button>
-          <Button
-            backgroundColor={"transparent"}
-            fontSize={["xs", "xs", "md", "xl"]}
-            _hover={{ backgroundColor: "transparent", color: "#D92353" }}
-          >
-            INSCRIÇÃO
-          </Button>
+          <Link href="/" passHref>
+            <Button
+              color={"#D92353"}
+              fontSize={["xs", "md", "xl"]}
+              backgroundColor={"transparent"}
+              _hover={{ backgroundColor: "transparent", color: "#D92353" }}
+            >
+              HOME
+            </Button>
+          </Link>
+          <Link href="/calendar" passHref>
+            <Button
+              backgroundColor={"transparent"}
+              fontSize={["xs", "xs", "md", "xl"]}
+              _hover={{ backgroundColor: "transparent", color: "#D92353" }}
+            >
+              PALESTRAS
+            </Button>
+          </Link>
+          <Link href="/inscricao" passHref>
+            <Button
+              backgroundColor={"transparent"}
+              fontSize={["xs", "xs", "md", "xl"]}
+              _hover={{ backgroundColor: "transparent", color: "#D92353" }}
+            >
+              INSCRIÇÃO
+            </Button>
+          </Link>
         </Flex>
         <Image
           src="/img/sidebar.png"

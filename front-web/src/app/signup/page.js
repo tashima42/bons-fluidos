@@ -10,6 +10,7 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import React from "react";
+import Link from "next/link";
 import { FaHome } from "react-icons/fa";
 
 export default function Login() {
@@ -19,12 +20,14 @@ export default function Login() {
   return (
     <Flex flexDirection={"column"}>
       <Flex align="flex-end" justify="flex-end" m={5}>
-        <Button
-          backgroundColor={"transparent"}
-          _hover={{ backgroundColor: "transparent" }}
-        >
-          <FaHome size={30} />
-        </Button>
+        <Link href="/" passHref>
+          <Button
+            backgroundColor={"transparent"}
+            _hover={{ backgroundColor: "transparent" }}
+          >
+            <FaHome size={30} />
+          </Button>
+        </Link>
       </Flex>
 
       <Flex alignItems={"center"} justifyContent={"center"} height={"80vh"}>

@@ -1,5 +1,6 @@
 import Sidebar from "@/components/sidebar";
 import { Flex, Box, Text, Button } from "@chakra-ui/react";
+import Link from "next/link";
 import { FaUserAlt } from "react-icons/fa";
 
 export default function Home() {
@@ -12,12 +13,14 @@ export default function Home() {
         maxWidth={"80%"}
       >
         <Flex align="flex-end" justify="flex-end" m={5}>
-          <Button
-            backgroundColor={"transparent"}
-            _hover={{ backgroundColor: "transparent" }}
-          >
-            <FaUserAlt size={30} />
-          </Button>
+          <Link href="/signin" passHref>
+            <Button
+              backgroundColor={"transparent"}
+              _hover={{ backgroundColor: "transparent" }}
+            >
+              <FaUserAlt size={30} />
+            </Button>
+          </Link>
         </Flex>
         <Box textAlign={"center"} padding={"7%"} fontWeight={500}>
           <Text
