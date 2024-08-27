@@ -80,6 +80,7 @@ func (c *Controller) SignIn(ctx *fiber.Ctx) error {
 	cookie.Expires = time.Now().Add(time.Hour * 24)
 	cookie.HTTPOnly = true
 	cookie.Secure = true
+	cookie.SameSite = "None"
 	ctx.Cookie(cookie)
 
 	return ctx.JSON(map[string]interface{}{"token": jwt})
