@@ -1,6 +1,5 @@
 # bons-fluidos
-
-Postman Collection: https://www.postman.com/pedrotashima/workspace/pedro-tashima-s-public-workspace/collection/13233153-8474c0a5-65c4-4f4b-b8c3-c567700eab48?action=share&creator=13233153
+API Docs: https://documenter.getpostman.com/view/13233153/2sA3rwMuDD
 
 Backend para o aplicativo Bons Fluidos
 
@@ -14,3 +13,10 @@ export JWT_SECRET=secret
 export PORT=3000
 go run .
 ```
+
+Frontend
+```
+cd front-web
+npm rum dev
+```
+
