@@ -28,7 +28,8 @@ func server() error {
 	}
 	app := fiber.New(fiber.Config{ErrorHandler: cr.ErrorHandler})
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000, https://bons-fluidos.vercel.app",
+		AllowOrigins:     "http://localhost:3000, https://bons-fluidos.vercel.app",
+		AllowCredentials: true,
 	}))
 	app.Use(requestid.New())
 
