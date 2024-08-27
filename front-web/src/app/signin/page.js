@@ -12,10 +12,20 @@ import {
 import Link from "next/link";
 import React from "react";
 import { FaHome } from "react-icons/fa";
+import { signIn, myInfo } from "../../services/index.js"
 
 export default function Login() {
   const [show, setShow] = React.useState(false);
+  const [email, setEmail] = React.useState("")
+  const [password, setPassword] = React.useState("")
   const handleClick = () => setShow(!show);
+  const handleSignin = () => {
+    signIn(email, password)
+      .then(() => {
+        myInfo()
+          .then(info => console.log(info))
+      })
+  }
 
   return (
     <Flex flexDirection={"column"}>
@@ -60,7 +70,7 @@ export default function Login() {
               >
                 <Input
                   mb={3}
-                  placeholder="Usuário"
+                  placeholder="E-mail"
                   backgroundColor={"#fff"}
                   _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
                   width={"70%"}
@@ -68,6 +78,7 @@ export default function Login() {
                     borderColor: "#E11F4C",
                     boxShadow: `0 0 0 1px #E11F4C`,
                   }}
+                  onChange={e => setEmail(e.target.value)}
                 />
                 <InputGroup width={"70%"}>
                   <Input
@@ -80,6 +91,7 @@ export default function Login() {
                       borderColor: "#E11F4C",
                       boxShadow: `0 0 0 1px #E11F4C`,
                     }}
+                    onChange={e => setPassword(e.target.value)}
                   />
                   <InputRightElement width="4.5rem">
                     <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -96,6 +108,7 @@ export default function Login() {
                   fontSize={["md", "lg"]}
                   size={["md", "lg"]}
                   _hover={{ backgroundColor: "#CC1C45" }}
+                  onClick={handleSignin}
                 >
                   Entrar
                 </Button>
