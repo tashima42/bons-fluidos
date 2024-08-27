@@ -1,7 +1,7 @@
 "use client";
 import Sidebar from "@/components/sidebar";
 import { Flex, Box, Text, Button } from "@chakra-ui/react";
-import { FaUserAlt } from "react-icons/fa";
+import { FaUserAlt, FaCheckCircle } from "react-icons/fa";
 import { useState } from "react";
 import Link from "next/link";
 import Calendar from "react-calendar";
@@ -14,14 +14,15 @@ import {
   ModalFooter,
   ModalBody,
   Input,
-  InputGroup,
+  Center,
   ModalCloseButton,
 } from "@chakra-ui/react";
 import "./style.css";
 
-export default function BFCalendar() {
+export default function Calendario() {
   const [value, onChange] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
 
   const handleDateClick = (date) => {
@@ -30,6 +31,13 @@ export default function BFCalendar() {
   };
   const handleCloseModal = () => {
     setIsOpen(false);
+  };
+  const handleCloseConfirmModal = () => {
+    setIsOpen(false);
+    setIsConfirmed(false);
+  };
+  const handleOpenConfirmModal = () => {
+    setIsConfirmed(true);
   };
 
   return (
@@ -46,204 +54,99 @@ export default function BFCalendar() {
             </Button>
           </Link>
         </Flex>
-
         <Flex
-          textAlign={"center"}
-          flexDirection={"column"}
-          fontWeight={500}
-          width={"100%"}
-          height={"70%"}
+          direction={"row"}
           justifyContent={"center"}
           alignItems={"center"}
+          height={"70vh"}
         >
-          <Text mb={4} fontSize={"25px"}>
-            Selecione uma data para criar o{" "}
-            <span style={{ color: "#D92353", fontWeight: "bold" }}>
-              evento!
-            </span>
-          </Text>
-          <Box
-            backgroundColor={"#FBE8ED"}
-            borderRadius={"15px"}
-            width={"608px"}
-            p={"30px"}
+          <Flex
+            textAlign={"center"}
+            flexDirection={"column"}
+            fontWeight={500}
+            width={"100%"}
+            height={"100%"}
+            justifyContent={"center"}
+            alignItems={"center"}
           >
-            <Calendar
-              onChange={onChange}
-              value={value}
-              locale={"pt-BR"}
-              onClickDay={handleDateClick}
-            />
-          </Box>
+            <Text mb={4} fontSize={"25px"}>
+              Acompanhe nossas próximas palestras!
+            </Text>
+            <Box
+              backgroundColor={"#FBE8ED"}
+              borderRadius={"15px"}
+              width={"550px"}
+              p={"30px"}
+            >
+              <Calendar
+                onChange={onChange}
+                value={value}
+                locale={"pt-BR"}
+                onClickDay={handleDateClick}
+              />
+            </Box>
+          </Flex>
+          <Flex direction={"column"} w={"70%"} m={"5%"} align={"center"}>
+            <Text mb={4} fontSize={["md", "lg", "xl"]}>
+              Já participou de algum evento da{" "}
+              <span style={{ color: "#D92353", fontWeight: "bold" }}>
+                Bons Fluídos
+              </span>
+              ?
+            </Text>
+            <Text mb={4} fontSize={["md", "lg"]} fontWeight={600}>
+              Busque seus certificados!
+            </Text>
+            <Flex dir="row">
+              <Input
+                placeholder="Insira seu R.A."
+                backgroundColor={"#F2F2F2"}
+              />
+              <Button
+                backgroundColor={"#E11F4C"}
+                ml={3}
+                color={"#FFF"}
+                borderRadius={15}
+                fontWeight={600}
+                _hover={{ backgroundColor: "#CC1C45" }}
+              >
+                Buscar
+              </Button>
+            </Flex>
+          </Flex>
         </Flex>
       </Flex>
 
-      <Modal isOpen={isOpen} onClose={handleCloseModal}>
+      <Modal isOpen={isOpen} onClose={handleCloseModal} isCentered size={"sm"}>
         <ModalOverlay />
-        <ModalContent width={"70%"} backgroundColor={"#FFE8EF"}>
+        <ModalContent width={"70%"} backgroundColor={"#FFFFF"}>
           <ModalHeader textAlign={"center"} color={"#E11F4C"}>
-            Cadastrar Palestras
+            INFORMAÇÕES
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <Box width={"100%"}>
-              <Flex flexDirection={"column"} justifyContent={"center"}>
-                <Text textAlign={"center"}>
-                  Você selecionou a data:{" "}
-                  <b>{selectedDate?.toLocaleDateString("pt-BR")}</b>
-                </Text>
-                <Text mb="8px" textAlign={"left"} pt={"3%"}>
-                  Título*
-                </Text>
-                <Input
-                  mb={3}
-                  placeholder="Título"
-                  backgroundColor={"#fff"}
-                  _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                  width={"100%"}
-                  _focus={{
-                    borderColor: "#E11F4C",
-                    boxShadow: `0 0 0 1px #E11F4C`,
-                  }}
-                />
+          <ModalBody></ModalBody>
 
-                <Text mb="8px" textAlign={"left"}>
-                  Palestrante*
-                </Text>
-                <Input
-                  mb={3}
-                  placeholder="Palestrante"
-                  backgroundColor={"#fff"}
-                  _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                  width={"100%"}
-                  _focus={{
-                    borderColor: "#E11F4C",
-                    boxShadow: `0 0 0 1px #E11F4C`,
-                  }}
-                />
+          <ModalFooter></ModalFooter>
+        </ModalContent>
+      </Modal>
 
-                <Text mb="8px" textAlign={"left"}>
-                  Descrição*
-                </Text>
-                <Input
-                  mb={3}
-                  placeholder="Descrição"
-                  backgroundColor={"#fff"}
-                  _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                  width={"100%"}
-                  _focus={{
-                    borderColor: "#E11F4C",
-                    boxShadow: `0 0 0 1px #E11F4C`,
-                  }}
-                />
-                <Flex direction={"row"} gap={2}>
-                  <Flex direction={"column"}>
-                    <Text mb="8px" textAlign={"left"}>
-                      Horário*
-                    </Text>
-                    <Input
-                      mb={3}
-                      placeholder="Horário"
-                      backgroundColor={"#fff"}
-                      _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                      _focus={{
-                        borderColor: "#E11F4C",
-                        boxShadow: `0 0 0 1px #E11F4C`,
-                      }}
-                    />
-                  </Flex>
-                  <Flex direction={"column"}>
-                    <Text mb="8px" textAlign={"left"}>
-                      Duração*
-                    </Text>
-                    <Input
-                      mb={3}
-                      placeholder="Duração"
-                      backgroundColor={"#fff"}
-                      _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                      _focus={{
-                        borderColor: "#E11F4C",
-                        boxShadow: `0 0 0 1px #E11F4C`,
-                      }}
-                    />
-                  </Flex>
-                </Flex>
-                <Text mb="8px" textAlign={"left"}>
-                  Local*
-                </Text>
-                <Input
-                  mb={3}
-                  placeholder="Local"
-                  backgroundColor={"#fff"}
-                  _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                  width={"100%"}
-                  _focus={{
-                    borderColor: "#E11F4C",
-                    boxShadow: `0 0 0 1px #E11F4C`,
-                  }}
-                />
-                <Text mb="8px" textAlign={"left"}>
-                  Ajudantes
-                </Text>
-
-                <Flex direction={"row"} gap={2}>
-                  <Input
-                    mb={3}
-                    placeholder="Nome do ajudante"
-                    backgroundColor={"#fff"}
-                    _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                    width={"100%"}
-                    _focus={{
-                      borderColor: "#E11F4C",
-                      boxShadow: `0 0 0 1px #E11F4C`,
-                    }}
-                  />
-
-                  <Button
-                    backgroundColor={"#E11F4C"}
-                    color={"#FFF"}
-                    fontWeight={600}
-                    fontSize={["md", "lg"]}
-                    _hover={{ backgroundColor: "#CC1C45" }}
-                  >
-                    <FaPlus />
-                  </Button>
-                </Flex>
-                <Flex
-                  direction={"row"}
-                  gap={2}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                  m={2}
-                >
-                  <Text textAlign={"left"}>Ajudante n1</Text>
-                  <Button
-                    backgroundColor={"transparent"}
-                    fontSize={"14px"}
-                    padding={5}
-                    margin={0}
-                    _hover={{ borderColor: "#FFCBDB" }}
-                  >
-                    Remover
-                  </Button>
-                </Flex>
-              </Flex>
-            </Box>
-          </ModalBody>
-
-          <ModalFooter justifyContent={"center"}>
-            <Button
-              backgroundColor={"#E11F4C"}
-              color={"#FFF"}
-              fontWeight={600}
-              fontSize={["md", "lg"]}
-              size={["md", "lg"]}
-              _hover={{ backgroundColor: "#CC1C45" }}
-              onClick={handleCloseModal}
-            >
-              Criar Evento
-            </Button>
-          </ModalFooter>
+      <Modal
+        isOpen={isConfirmed}
+        onClose={handleCloseConfirmModal}
+        size={["sm"]}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent width={"70%"}>
+          <ModalHeader>
+            <Flex direction={"row"} alignItems={"center"}>
+              <FaCheckCircle color="#00BA01" />{" "}
+              <Text ml={3}>Evento criado com sucesso.</Text>
+            </Flex>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody></ModalBody>
+          <ModalFooter></ModalFooter>
         </ModalContent>
       </Modal>
     </Flex>
