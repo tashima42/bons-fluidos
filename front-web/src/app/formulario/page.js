@@ -1,7 +1,7 @@
 "use client";
 import Sidebar from "@/components/sidebar";
 import { Flex, Text, Button } from "@chakra-ui/react";
-import { FaUserAlt } from "react-icons/fa";
+import { FaUserAlt, FaCheckCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
