@@ -28,7 +28,7 @@ func server() error {
 	}
 	app := fiber.New(fiber.Config{ErrorHandler: cr.ErrorHandler})
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
+		AllowOrigins: "http://localhost:3000, https://bons-fluidos.vercel.app",
 	}))
 	app.Use(requestid.New())
 
@@ -45,8 +45,8 @@ func server() error {
 	// User routes
 	//    Get Logedin User Information
 	app.Get("/user/me", cr.ValidateToken, cr.Me)
-  //    Update user password
-  app.Patch("/user/password", cr.ValidateToken, cr.ChangePassword)
+	//    Update user password
+	app.Patch("/user/password", cr.ValidateToken, cr.ChangePassword)
 	//    Signout user
 	app.Post("/user/signout", cr.ValidateToken, cr.SignOut)
 	// Event routes
