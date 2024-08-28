@@ -12,22 +12,22 @@ import {
 import Link from "next/link";
 import React from "react";
 import { FaHome } from "react-icons/fa";
-import { signIn } from "../../services/index.js"
+import { signIn } from "../../services/index.js";
 
 export default function Login() {
   const [show, setShow] = React.useState(false);
-  const [email, setEmail] = React.useState("")
-  const [password, setPassword] = React.useState("")
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const handleClick = () => setShow(!show);
   const handleSignin = async () => {
     try {
       await signIn(email, password);
-      window.location.href = "/"
+      window.location.href = "/";
     } catch (error) {
-      console.error('Erro:', error);
+      console.error("Erro:", error);
     }
-  }
-  
+  };
+
   return (
     <Flex flexDirection={"column"}>
       <Flex align="flex-end" justify="flex-end" m={5}>
@@ -79,7 +79,7 @@ export default function Login() {
                     borderColor: "#E11F4C",
                     boxShadow: `0 0 0 1px #E11F4C`,
                   }}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <InputGroup width={"70%"}>
                   <Input
@@ -92,7 +92,7 @@ export default function Login() {
                       borderColor: "#E11F4C",
                       boxShadow: `0 0 0 1px #E11F4C`,
                     }}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <InputRightElement width="4.5rem">
                     <Button h="1.75rem" size="sm" onClick={handleClick}>
