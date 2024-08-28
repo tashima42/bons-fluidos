@@ -12,21 +12,22 @@ import {
 import Link from "next/link";
 import React from "react";
 import { FaHome } from "react-icons/fa";
-import { signIn, myInfo } from "../../services/index.js"
+import { signIn } from "../../services/index.js"
 
 export default function Login() {
   const [show, setShow] = React.useState(false);
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const handleClick = () => setShow(!show);
-  const handleSignin = () => {
-    signIn(email, password)
-      .then(() => {
-        myInfo()
-          .then(info => console.log(info))
-      })
+  const handleSignin = async () => {
+    try {
+      await signIn(email, password);
+      window.location.href = "/"
+    } catch (error) {
+      console.error('Erro:', error);
+    }
   }
-
+  
   return (
     <Flex flexDirection={"column"}>
       <Flex align="flex-end" justify="flex-end" m={5}>
