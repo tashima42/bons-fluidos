@@ -1,16 +1,23 @@
 package main
 
 import (
+	"embed"
 	"errors"
+	"net/http"
 	"os"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/tashima42/bons-fluidos/controller"
 	"github.com/tashima42/bons-fluidos/database"
 )
+
+//go:embed all:out
+var frontendFiles embed.FS
 
 func server() error {
 	db, err := database.FromEnv()
@@ -27,16 +34,25 @@ func server() error {
 		Validate:  validator.New(validator.WithRequiredStructEnabled()),
 	}
 	app := fiber.New(fiber.Config{ErrorHandler: cr.ErrorHandler})
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000, https://bons-fluidos.vercel.app",
-		AllowCredentials: true,
-	}))
 	app.Use(requestid.New())
 
+  app.Use(logger.New(logger.Config{
+    Format: "(${ip}) [${locals:requestid}] ${status} - ${method} ${path}\n",
+  }))
+
+	app.Use(cors.New(cors.Config{
+    AllowOrigins:     "http://localhost:3000, https://bons-fluidos.vercel.app, https://bons-fluidos.tashima.space",
+		AllowCredentials: true,
+	}))
+
+  // static frontend
+  app.Use("/", filesystem.New(filesystem.Config{
+      Root: http.FS(frontendFiles),
+      PathPrefix: "out",
+      Browse: true,
+  }))
+
 	// ROUTES
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
 	// Unauthenticated User Routes
 	//    Signin User
 	app.Post("/user/signin", cr.SignIn)
@@ -96,3 +112,4 @@ func portFromEnv() string {
 	}
 	return port
 }
+

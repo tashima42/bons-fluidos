@@ -1,8 +1,17 @@
 # bons-fluidos
 
-API Docs: https://documenter.getpostman.com/view/13233153/2sA3rwMuDD
+Documentação da API: https://documenter.getpostman.com/view/13233153/2sA3rwMuDD
 
-Backend para o aplicativo Bons Fluidos
+## Ferramentas e versões
+
+* [Golang 1.23](https://go.dev/)
+* [Next.js 14.2](https://nextjs.org/) 
+* [SQLite 3](https://www.sqlite.org/)
+* [npm 10.8](https://www.npmjs.com/)
+* [GNU Make 3.81](https://www.gnu.org/software/make/)
+* [Docker 27 (opcional)](https://www.docker.com/)
+
+## Compilação e Execução
 
 ## Desenvolvimento
 

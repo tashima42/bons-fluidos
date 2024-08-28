@@ -20,24 +20,13 @@ func FromEnv() (*sqlx.DB, error){
   if path == "" {
     return nil, errors.New("Env Var DATABASE_PATH is required")
   }
-  migrateDownUp := false
-  if os.Getenv("MIGRATE_DOWN_UP") == "1" || os.Getenv("MIGRATE_DOWN_UP") == "TRUE" {
-    migrateDownUp = true
-  }
-  
-
-  return Open(path, migrateDownUp)
+  return Open(path)
 }
 
-func Open(path string, migrateDownUp bool) (*sqlx.DB, error) {
+func Open(path string) (*sqlx.DB, error) {
 	m, err := newMigrate(path)
 	if err != nil {
 		return nil, err
-	}
-	if migrateDownUp {
-		if err := m.Down(); err != nil {
-			return nil, err
-		}
 	}
 	if err := m.Up(); err != nil {
 		if err != migrate.ErrNoChange {
