@@ -8,6 +8,11 @@
   font-weight: bold;
 }
 
+.highlight {
+  background-color: #d92353 !important;
+  color: white !important;
+}
+
 .react-calendar__navigation__arrow {
   flex-grow: 0.333;
 }
