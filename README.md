@@ -25,7 +25,7 @@ export JWT_SECRET=secret
 export DATABASE_PATH=./bons-fluidos.db
 ./bons-fluidos
 ```
-Adicionar usuário de testes:
+Adicionar usuário de testes:    
 Pare o projeto, execute o comando a seguir e o execute o projeto novamente usando as instruções do passo anterior
 ```
 sqlite3 bons-fluidos.db < seed.sql
@@ -48,13 +48,16 @@ docker run --name bons-fluidos-dev -e JWT_SECRET=secret --mount "type=bind,sourc
 ```
 
 Adicionar usuário de testes:
+
 Pare o container docker e execute os comandos a seguir
+
 ```
 sqlite3 container-data/bons-fluidos.db < seed.sql
 docker start -a bons-fluidos-dev
 ```
 
 Endereço padrão: http://localhost:3000
+
 Usuário de testes:
 * email: admin@utfpr.edu.br
 * senha: 1234567
