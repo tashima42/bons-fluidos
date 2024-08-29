@@ -17,7 +17,7 @@ RUN go mod download
 
 COPY ./ ./
 
-COPY --from=front-builder /app/out .
+COPY --from=front-builder /app/out ./out
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bons-fluidos
 

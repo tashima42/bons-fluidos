@@ -1,4 +1,5 @@
-const BASE_URL = "https://bons-fluidos.tashima.space";
+const envBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+const BASE_URL = envBaseUrl ? envBaseUrl : "https://bons-fluidos.tashima.space"
 
 async function signIn(email, password) {
   return await makeRequest("/user/signin", {
@@ -29,6 +30,9 @@ const createEvent = async (event) => {
 };
 
 async function makeRequest(path, options) {
+  if (envBaseUrl == "") {
+    throw new Erro("missing base url")
+  }
   options.redirect = "follow";
   options.credentials = "include";
   const res = await fetch(BASE_URL + path, options);
