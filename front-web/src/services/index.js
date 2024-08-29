@@ -16,9 +16,25 @@ async function events() {
   return await makeRequest("/events", { method: "GET" });
 }
 
+async function generalVolunteers() {
+  return await makeRequest("/forms/volunteer", { method: "GET" });
+}
+
 const deleteEvent = async (eventId) => {
   return await makeRequest(`/event/${eventId}`, {
     method: "DELETE",
+  });
+};
+
+const eventVolunteers = async (eventId) => {
+  return await makeRequest(`/event/${eventId}/volunteers`, {
+    method: "GET",
+  });
+};
+
+const addVolunteerToEvent = async (eventId, volunteerId) => {
+  return await makeRequest(`/event/${eventId}/volunteer/${volunteerId}`, {
+    method: "POST",
   });
 };
 
@@ -26,6 +42,13 @@ const createEvent = async (event) => {
   return await makeRequest("/event", {
     method: "POST",
     body: JSON.stringify(event),
+  });
+};
+
+const createVolunteer = async (obj) => {
+  return await makeRequest("/forms/volunteer", {
+    method: "POST",
+    body: JSON.stringify(obj),
   });
 };
 
@@ -42,4 +65,4 @@ async function makeRequest(path, options) {
   return res.json();
 }
 
-export { signIn, myInfo, createEvent, events, deleteEvent };
+export { signIn, myInfo, createEvent, events, deleteEvent, createVolunteer, eventVolunteers, generalVolunteers, addVolunteerToEvent };

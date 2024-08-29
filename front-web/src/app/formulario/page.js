@@ -15,11 +15,20 @@ import {
   ModalCloseButton,
   Select,
 } from "@chakra-ui/react";
+import {
+  createVolunteer
+} from "../../services/index.js";
+
 
 export default function Formulario() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("vol");
   const [minDate, setMinDate] = useState("");
+  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventName, setEventName] = useState("");
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -30,6 +39,15 @@ export default function Formulario() {
   };
   const handleCloseModal = () => {
     setIsOpen(false);
+  };
+
+  const handleSubmit = async (obj) => {
+    try {
+      await createVolunteer(obj);
+      handleOpenModal
+    } catch (error) {
+      console.error("Error creating volunteer:", error);
+    }
   };
 
   useEffect(() => {
@@ -49,6 +67,11 @@ export default function Formulario() {
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    return d.toISOString(); 
+  };
 
   return (
     <Flex flexDirection={"row"}>
@@ -90,6 +113,8 @@ export default function Formulario() {
             </Text>
             <Input
               mb={3}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="Nome completo"
               backgroundColor={"#fff"}
               _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
@@ -104,6 +129,8 @@ export default function Formulario() {
               Telefone*
             </Text>
             <Input
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
               mb={3}
               placeholder="Telefone"
               backgroundColor={"#fff"}
@@ -121,6 +148,8 @@ export default function Formulario() {
             </Text>
             <Input
               mb={3}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="E-mail"
               backgroundColor={"#fff"}
               _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
@@ -147,7 +176,14 @@ export default function Formulario() {
                   fontSize={["md", "lg"]}
                   size={["md", "lg"]}
                   _hover={{ backgroundColor: "#CC1C45" }}
-                  onClick={handleOpenModal}
+                  onClick={() => {
+                    const obj = {
+                      name: username,
+                      email: email,
+                      phone: phone,
+                      type: "volunteer"
+                    };
+                    handleSubmit(obj)}}
                 >
                   Enviar inscrição
                 </Button>
@@ -163,6 +199,8 @@ export default function Formulario() {
                   backgroundColor={"#fff"}
                   _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
                   width={"100%"}
+                  value={eventName}
+                  onChange={(e) => setEventName(e.target.value)}
                   _focus={{
                     borderColor: "#E11F4C",
                     boxShadow: `0 0 0 1px #E11F4C`,
@@ -173,9 +211,11 @@ export default function Formulario() {
                 </Text>
                 <Input
                   mb={3}
+                  value={eventDate}
+                  onChange={(e) => setEventDate(e.target.value)}
                   placeholder="Selecione a data e o horário"
                   size="md"
-                  type="date"
+                  type="datetime-local"
                   min={minDate}
                 />
                 <Button
@@ -185,7 +225,16 @@ export default function Formulario() {
                   fontSize={["md", "lg"]}
                   size={["md", "lg"]}
                   _hover={{ backgroundColor: "#CC1C45" }}
-                  onClick={handleOpenModal}
+                  onClick={() => {
+                    const obj = {
+                      name: username,
+                      email: email,
+                      phone: phone,
+                      type: "speaker",
+                      eventName: eventName,
+                      eventDate: formatDate(eventDate)
+                    };
+                    handleSubmit(obj)}}
                 >
                   Enviar inscrição
                 </Button>
