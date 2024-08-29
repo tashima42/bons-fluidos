@@ -1,5 +1,5 @@
-const envBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
-const BASE_URL = envBaseUrl ? envBaseUrl : "https://bons-fluidos.tashima.space"
+const envBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BASE_URL = envBaseUrl ? envBaseUrl : "https://bons-fluidos.tashima.space";
 
 async function signIn(email, password) {
   return await makeRequest("/user/signin", {
@@ -16,9 +16,25 @@ async function events() {
   return await makeRequest("/events", { method: "GET" });
 }
 
+async function generalVolunteers() {
+  return await makeRequest("/forms/volunteer", { method: "GET" });
+}
+
 const deleteEvent = async (eventId) => {
   return await makeRequest(`/event/${eventId}`, {
     method: "DELETE",
+  });
+};
+
+const eventVolunteers = async (eventId) => {
+  return await makeRequest(`/event/${eventId}/volunteers`, {
+    method: "GET",
+  });
+};
+
+const addVolunteerToEvent = async (eventId, volunteerId) => {
+  return await makeRequest(`/event/${eventId}/volunteer/${volunteerId}`, {
+    method: "POST",
   });
 };
 
@@ -29,9 +45,16 @@ const createEvent = async (event) => {
   });
 };
 
+const createVolunteer = async (obj) => {
+  return await makeRequest("/forms/volunteer", {
+    method: "POST",
+    body: JSON.stringify(obj),
+  });
+};
+
 async function makeRequest(path, options) {
   if (envBaseUrl == "") {
-    throw new Erro("missing base url")
+    throw new Erro("missing base url");
   }
   options.redirect = "follow";
   options.credentials = "include";
@@ -42,4 +65,14 @@ async function makeRequest(path, options) {
   return res.json();
 }
 
-export { signIn, myInfo, createEvent, events, deleteEvent };
+export {
+  signIn,
+  myInfo,
+  createEvent,
+  events,
+  deleteEvent,
+  createVolunteer,
+  eventVolunteers,
+  generalVolunteers,
+  addVolunteerToEvent,
+};
