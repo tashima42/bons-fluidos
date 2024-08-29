@@ -15,10 +15,7 @@ import {
   ModalCloseButton,
   Select,
 } from "@chakra-ui/react";
-import {
-  createVolunteer
-} from "../../services/index.js";
-
+import { createVolunteer } from "../../services/index.js";
 
 export default function Formulario() {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +41,7 @@ export default function Formulario() {
   const handleSubmit = async (obj) => {
     try {
       await createVolunteer(obj);
-      handleOpenModal
+      handleOpenModal;
     } catch (error) {
       console.error("Error creating volunteer:", error);
     }
@@ -70,7 +67,7 @@ export default function Formulario() {
 
   const formatDate = (date) => {
     const d = new Date(date);
-    return d.toISOString(); 
+    return d.toISOString();
   };
 
   return (
@@ -129,8 +126,8 @@ export default function Formulario() {
               Telefone*
             </Text>
             <Input
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               mb={3}
               placeholder="Telefone"
               backgroundColor={"#fff"}
@@ -181,9 +178,10 @@ export default function Formulario() {
                       name: username,
                       email: email,
                       phone: phone,
-                      type: "volunteer"
+                      type: "volunteer",
                     };
-                    handleSubmit(obj)}}
+                    handleSubmit(obj);
+                  }}
                 >
                   Enviar inscrição
                 </Button>
@@ -232,9 +230,10 @@ export default function Formulario() {
                       phone: phone,
                       type: "speaker",
                       eventName: eventName,
-                      eventDate: formatDate(eventDate)
+                      eventDate: formatDate(eventDate),
                     };
-                    handleSubmit(obj)}}
+                    handleSubmit(obj);
+                  }}
                 >
                   Enviar inscrição
                 </Button>

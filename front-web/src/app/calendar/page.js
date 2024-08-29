@@ -18,10 +18,7 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import "./style.css";
-import {
-  events,
-} from "../../services/index.js";
-
+import { events } from "../../services/index.js";
 
 export default function Calendario() {
   const [value, onChange] = useState(new Date());
@@ -37,21 +34,23 @@ export default function Calendario() {
       try {
         const response = await events();
         if (Array.isArray(response)) {
-          const eventDates = response ? response.map((event) => new Date(event.startDate)) : [];
+          const eventDates = response
+            ? response.map((event) => new Date(event.startDate))
+            : [];
           setHighlightedDates(eventDates);
-          setEventsList(response || []); 
-          setFilteredEvents(response)
+          setEventsList(response || []);
+          setFilteredEvents(response);
         } else {
           setHighlightedDates([]);
           setEventsList([]);
         }
       } catch (err) {
         console.error("Error fetching events:", err.message);
-        setHighlightedDates([]); 
-        setEventsList([]); 
+        setHighlightedDates([]);
+        setEventsList([]);
       }
     };
-  
+
     fetchEventDetails();
   }, []);
 
@@ -122,21 +121,21 @@ export default function Calendario() {
               width={"550px"}
               p={"30px"}
             >
-             <Calendar
-              onChange={onChange}
-              value={value}
-              tileClassName={({ date, view }) => {
-                if (view === "month" && isHighlighted(date)) {
-                  return "highlight";
-                }
-                return null;
-              }}
-              locale={"pt-BR"}
-              onClickDay={(date) => {
-                setSelectedDate(date);
-                setIsOpen(true);
-              }}
-            />
+              <Calendar
+                onChange={onChange}
+                value={value}
+                tileClassName={({ date, view }) => {
+                  if (view === "month" && isHighlighted(date)) {
+                    return "highlight";
+                  }
+                  return null;
+                }}
+                locale={"pt-BR"}
+                onClickDay={(date) => {
+                  setSelectedDate(date);
+                  setIsOpen(true);
+                }}
+              />
             </Box>
           </Flex>
           <Flex direction={"column"} w={"70%"} m={"5%"} align={"center"}>
@@ -170,7 +169,6 @@ export default function Calendario() {
         </Flex>
       </Flex>
 
-
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent width={"70%"} backgroundColor={"#FFE8EF"}>
@@ -200,9 +198,9 @@ export default function Calendario() {
                         padding={15}
                         margin={"2%"}
                       >
-                          <Text>
-                            <b>Título:</b> {event.name}
-                          </Text>
+                        <Text>
+                          <b>Título:</b> {event.name}
+                        </Text>
                         <Text>
                           <b>Palestrante:</b> {event.speaker.name}
                         </Text>

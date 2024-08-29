@@ -66,12 +66,12 @@ export default function CriarEvento() {
         const data = await events();
         const eventDates = data.map((event) => new Date(event.startDate));
         setHighlightedDates(eventDates);
-        setEventsList(data); 
+        setEventsList(data);
       } catch (err) {
         console.error("Error fetching events:", err.message);
       }
     };
-  
+
     fetchEventDetails();
 
     myInfo()
@@ -83,7 +83,7 @@ export default function CriarEvento() {
     try {
       const data = await eventVolunteers(id);
       const volunteers = data.map((volunteer) => volunteer);
-      setEventVolunteersList(volunteers); 
+      setEventVolunteersList(volunteers);
     } catch (err) {
       console.error("Error fetching events:", err.message);
     }
@@ -93,12 +93,12 @@ export default function CriarEvento() {
     try {
       const data = await generalVolunteers();
       const volunteers = data.map((volunteer) => volunteer);
-      setVolunteersList(volunteers); 
+      setVolunteersList(volunteers);
     } catch (err) {
       console.error("Error fetching events:", err.message);
     }
   };
-  
+
   const handleCreateEvent = async (event) => {
     try {
       await createEvent(event);
@@ -119,8 +119,8 @@ export default function CriarEvento() {
   const handleDeleteEvent = async (id) => {
     try {
       await deleteEvent(id);
-      setEventsList((prevEvents) => 
-        prevEvents.filter((event) => event.id !== id)
+      setEventsList((prevEvents) =>
+        prevEvents.filter((event) => event.id !== id),
       );
     } catch (error) {
       console.error("Error deleting event:", error);
@@ -222,7 +222,11 @@ export default function CriarEvento() {
         </Flex>
       </Flex>
 
-      <Modal isOpen={isVolunteersOpen} onClose={onCloseVolunteersModal} size={"lg"}>
+      <Modal
+        isOpen={isVolunteersOpen}
+        onClose={onCloseVolunteersModal}
+        size={"lg"}
+      >
         <ModalOverlay />
         <ModalContent width={"100%"} backgroundColor={"#FFE8EF"}>
           <ModalHeader textAlign={"center"} color={"#E11F4C"}>
@@ -235,50 +239,59 @@ export default function CriarEvento() {
                 <Text textAlign={"center"} mb={"3%"}>
                   <b>Voluntários/Palestrantes</b>
                 </Text>
-                <Flex direction={"column"} align={"center"} justifyContent={"space-between"}>
-                <Select placeholder='Selecionar' backgroundColor={"white"} value={volunteerId}  onChange={(e) => setVolunteerId(e.target.value)}>
-                {volunteersList.map((volunteer) => (
-                <option value={volunteer.id}>{volunteer.name}</option>
-                ))}
-                </Select>
-                <Button
-                mt={3}
-                  backgroundColor={"#E11F4C"}
-                  color={"#FFF"}
-                  fontWeight={600}
-                  fontSize={["sm","md"]}
-                  size={["sm", "md"]}
-                  _hover={{ backgroundColor: "#CC1C45" }}
-                  onClick={() => {
-                    handleAddVolunteer(selectedEventId,volunteerId)
-                  }}
-                  wordBreak="break-word"
+                <Flex
+                  direction={"column"}
+                  align={"center"}
+                  justifyContent={"space-between"}
                 >
-                  Adicionar Voluntário/Palestrante
-                </Button>
+                  <Select
+                    placeholder="Selecionar"
+                    backgroundColor={"white"}
+                    value={volunteerId}
+                    onChange={(e) => setVolunteerId(e.target.value)}
+                  >
+                    {volunteersList.map((volunteer) => (
+                      <option value={volunteer.id}>{volunteer.name}</option>
+                    ))}
+                  </Select>
+                  <Button
+                    mt={3}
+                    backgroundColor={"#E11F4C"}
+                    color={"#FFF"}
+                    fontWeight={600}
+                    fontSize={["sm", "md"]}
+                    size={["sm", "md"]}
+                    _hover={{ backgroundColor: "#CC1C45" }}
+                    onClick={() => {
+                      handleAddVolunteer(selectedEventId, volunteerId);
+                    }}
+                    wordBreak="break-word"
+                  >
+                    Adicionar Voluntário/Palestrante
+                  </Button>
 
-                <TableContainer>
-  <Table size='sm'>
-    <Thead>
-      <Tr>
-        <Th>Nome</Th>
-        <Th>Telefone</Th>
-        <Th>Email</Th>
-        <Th>Tipo</Th>
-      </Tr>
-    </Thead>
-    <Tbody>
-    {eventVolunteersList.map((volunteer) => (
-      <Tr>
-      <Td>{volunteer.name}</Td>
-      <Td>{volunteer.phone}</Td>
-      <Td>{volunteer.email}</Td>
-      <Td>{volunteer.role}</Td>
-      </Tr>
-    ))}
-    </Tbody>
-  </Table>
-</TableContainer>
+                  <TableContainer>
+                    <Table size="sm">
+                      <Thead>
+                        <Tr>
+                          <Th>Nome</Th>
+                          <Th>Telefone</Th>
+                          <Th>Email</Th>
+                          <Th>Tipo</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {eventVolunteersList.map((volunteer) => (
+                          <Tr>
+                            <Td>{volunteer.name}</Td>
+                            <Td>{volunteer.phone}</Td>
+                            <Td>{volunteer.email}</Td>
+                            <Td>{volunteer.role}</Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
                 </Flex>
               </Flex>
             </Box>
@@ -399,31 +412,29 @@ export default function CriarEvento() {
                           <b>Horário:</b> {formateHour(event.startDate)} -{" "}
                           {formateHour(event.endDate)}
                         </Text>
-                          <Text>
+                        <Text>
                           <b>Local:</b> {event.location}
-                          </Text>
-                          <Button
-                            variant={"ghost"}
-                            height={"15px"}
-                            color={"#E11F4C"}
-                            _hover={{
-                              backgroundColor: "transparent",
-                              color: "#B7193E",
-                            }}
-                            onClick={() => {
-                              fetchGeneralVolunteersList()
-                              setSelectedEventId(event.id)
-                              fetchVolunteersList(event.id)
-                              setIsVolunteersOpen(true)
-                            }}
-                          >
-                            <Flex flexDirection={"row"} align={"center"} mt={3}>
+                        </Text>
+                        <Button
+                          variant={"ghost"}
+                          height={"15px"}
+                          color={"#E11F4C"}
+                          _hover={{
+                            backgroundColor: "transparent",
+                            color: "#B7193E",
+                          }}
+                          onClick={() => {
+                            fetchGeneralVolunteersList();
+                            setSelectedEventId(event.id);
+                            fetchVolunteersList(event.id);
+                            setIsVolunteersOpen(true);
+                          }}
+                        >
+                          <Flex flexDirection={"row"} align={"center"} mt={3}>
                             <FaUsersGear />
-                            <Text ml={2} >
-                            Participantes/Voluntários
-                            </Text>
-                            </Flex>
-                          </Button>
+                            <Text ml={2}>Participantes/Voluntários</Text>
+                          </Flex>
+                        </Button>
                       </Box>
                     ))
                   ) : (
