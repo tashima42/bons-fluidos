@@ -29,7 +29,7 @@ func (c *Controller) CreateVolunteerForm(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(map[string]bool{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]bool{"success": true})
 }
 
 func (c *Controller) GetVolunteerForms(ctx *fiber.Ctx) error {
@@ -48,5 +48,5 @@ func (c *Controller) GetVolunteerForms(ctx *fiber.Ctx) error {
 		return fiber.NewError(http.StatusNotFound, "no volunteer forms found")
 	}
 
-	return ctx.JSON(volunteerForms)
+	return ctx.Status(http.StatusOK).JSON(volunteerForms)
 }
