@@ -173,3 +173,22 @@ func (c *Controller) SignOut(ctx *fiber.Ctx) error {
 	ctx.Cookie(cookie)
 	return ctx.JSON(map[string]interface{}{"success": true})
 }
+
+func (c *Controller) ListVolunteers(ctx *fiber.Ctx) error {
+	requestID := fmt.Sprintf("%s", ctx.Locals("requestid"))
+
+	slog.Info(requestID + ": getting volunteer users")
+	users, err := database.GetVolunteerUsers(c.DB)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.NewError(http.StatusNotFound, "no volunteer users found")
+		}
+		return err
+	}
+
+	if len(users) == 0 {
+		return fiber.NewError(http.StatusNotFound, "no users found")
+	}
+
+	return ctx.JSON(users)
+}

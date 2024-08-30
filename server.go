@@ -36,21 +36,21 @@ func server() error {
 	app := fiber.New(fiber.Config{ErrorHandler: cr.ErrorHandler})
 	app.Use(requestid.New())
 
-  app.Use(logger.New(logger.Config{
-    Format: "(${ip}) [${locals:requestid}] ${status} - ${method} ${path}\n",
-  }))
+	app.Use(logger.New(logger.Config{
+		Format: "(${ip}) [${locals:requestid}] ${status} - ${method} ${path}\n",
+	}))
 
 	app.Use(cors.New(cors.Config{
-    AllowOrigins:     "http://localhost:3000, https://bons-fluidos.vercel.app, https://bons-fluidos.tashima.space",
+		AllowOrigins:     "http://localhost:3000, https://bons-fluidos.vercel.app, https://bons-fluidos.tashima.space",
 		AllowCredentials: true,
 	}))
 
-  // static frontend
-  app.Use("/", filesystem.New(filesystem.Config{
-      Root: http.FS(frontendFiles),
-      PathPrefix: "out",
-      Browse: true,
-  }))
+	// static frontend
+	app.Use("/", filesystem.New(filesystem.Config{
+		Root:       http.FS(frontendFiles),
+		PathPrefix: "out",
+		Browse:     true,
+	}))
 
 	// ROUTES
 	// Unauthenticated User Routes
@@ -66,6 +66,8 @@ func server() error {
 	app.Patch("/user/password", cr.ValidateToken, cr.ChangePassword)
 	//    Signout user
 	app.Post("/user/signout", cr.ValidateToken, cr.SignOut)
+	// 		List users with the role volunteer
+	app.Get("/volunteers", cr.ValidateToken, cr.ValidateRoleAdmin, cr.ListVolunteers)
 	// Event routes
 	//    Create new event
 	app.Post("/event", cr.ValidateToken, cr.ValidateRoleAdmin, cr.CreateEvent)
@@ -112,4 +114,3 @@ func portFromEnv() string {
 	}
 	return port
 }
-
