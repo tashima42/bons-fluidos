@@ -181,13 +181,13 @@ func (c *Controller) ListVolunteers(ctx *fiber.Ctx) error {
 	users, err := database.GetVolunteerUsers(c.DB)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return ctx.Status(http.StatusOK).JSON("[]")
+			return ctx.Status(http.StatusOK).JSON(make([]string, 0))
 		}
 		return err
 	}
 
 	if len(users) == 0 {
-		return ctx.Status(http.StatusOK).JSON("[]")
+		return ctx.Status(http.StatusOK).JSON(make([]string, 0))
 	}
 
 	return ctx.Status(http.StatusOK).JSON(users)

@@ -39,13 +39,13 @@ func (c *Controller) GetVolunteerForms(ctx *fiber.Ctx) error {
 	volunteerForms, err := database.GetVolunteerForms(c.DB)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return ctx.Status(http.StatusOK).JSON("[]")
+			return ctx.Status(http.StatusOK).JSON(make([]string, 0))
 		}
 		return err
 	}
 
 	if len(volunteerForms) == 0 {
-		return ctx.Status(http.StatusOK).JSON("[]")
+		return ctx.Status(http.StatusOK).JSON(make([]string, 0))
 	}
 
 	return ctx.Status(http.StatusOK).JSON(volunteerForms)
