@@ -11,14 +11,19 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem, 
   Input,
-  Center,
   ModalCloseButton,
 } from "@chakra-ui/react";
 import "./style.css";
 import { events } from "../../services/index.js";
+import { myInfo, signOut } from "../../services/index.js";
+import { ChevronDownIcon } from "@chakra-ui/icons"; 
+
 
 export default function Calendario() {
   const [value, onChange] = useState(new Date());
@@ -28,6 +33,29 @@ export default function Calendario() {
   const [eventsList, setEventsList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [filteredEvents, setFilteredEvents] = useState([]);
+  const [isLogged, setIsLogged] = useState(false);
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      try {
+        const user = await myInfo();
+        if(user)
+          setIsLogged(true);
+      } catch {
+        setIsLogged(false);
+      }
+    };
+    fetchInfo();
+  }, []);
+
+  const handleSignOut = async (obj) => {
+    try {
+      await signOut();
+      window.location.reload();
+    } catch (error) {
+      console.error("Error sign out:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -38,8 +66,7 @@ export default function Calendario() {
             ? response.map((event) => new Date(event.startDate))
             : [];
           setHighlightedDates(eventDates);
-          setEventsList(response || []);
-          setFilteredEvents(response);
+          setEventsList(response);
         } else {
           setHighlightedDates([]);
           setEventsList([]);
@@ -61,10 +88,28 @@ export default function Calendario() {
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
   }
 
+  function getDateOnly(isoString) {
+    const date = new Date(isoString);
+    
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+  }
+  
   const handleDateClick = (date) => {
     setSelectedDate(date);
+    const selectedDate = getDateOnly(date);
+    const filteredEvents = eventsList.filter(event => {
+      const formattedDate = getDateOnly(event.startDate);
+      return formattedDate === selectedDate;
+    });
+  
+    setFilteredEvents(filteredEvents);
     setIsOpen(true);
   };
+  
   const handleCloseModal = () => {
     setIsOpen(false);
   };
@@ -85,17 +130,28 @@ export default function Calendario() {
   };
   return (
     <Flex flexDirection={"row"}>
-      <Sidebar selectedPage={2} />
+      <Sidebar selectedPage={1} />
       <Flex flexDirection={"column"} width={"100%"}>
-        <Flex align="flex-end" justify="flex-end" m={5}>
+      <Flex align="flex-end" justify="flex-end" m={5}>
+        {isLogged == true ?
+        (
+          <Menu>
+  <MenuButton as={Button} backgroundColor={"transparent"} rightIcon={<ChevronDownIcon />}>
+  <FaUserAlt size={30} />
+  </MenuButton>
+  <MenuList>
+    <MenuItem onClick={() =>  window.location.href = "/change-password"}>Trocar senha</MenuItem>
+    <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
+  </MenuList>
+</Menu>
+        ): (
           <Link href="/signin" passHref>
-            <Button
-              backgroundColor={"transparent"}
-              _hover={{ backgroundColor: "transparent" }}
-            >
-              <FaUserAlt size={30} />
+            <Button backgroundColor={"transparent"}>
+  <FaUserAlt size={30} />
             </Button>
           </Link>
+        )}
+
         </Flex>
         <Flex
           direction={"row"}
@@ -132,8 +188,7 @@ export default function Calendario() {
                 }}
                 locale={"pt-BR"}
                 onClickDay={(date) => {
-                  setSelectedDate(date);
-                  setIsOpen(true);
+                  handleDateClick(date)
                 }}
               />
             </Box>
