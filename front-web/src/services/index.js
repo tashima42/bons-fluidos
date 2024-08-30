@@ -8,20 +8,48 @@ async function signIn(email, password) {
   });
 }
 
+async function signUp(email, name, role, password) {
+  return await makeRequest("/user", {
+    method: "POST",
+    body: JSON.stringify({ email, name, role, password }),
+  });
+}
+
+async function changePassword(obj) {
+  return await makeRequest("/user/password", {
+    method: "PATCH",
+    body: JSON.stringify(obj),
+  });
+}
+
 async function myInfo() {
   return await makeRequest("/user/me", { method: "GET" });
+}
+
+async function signOut() {
+  return await makeRequest("/user/signout", { method: "POST" });
 }
 
 async function events() {
   return await makeRequest("/events", { method: "GET" });
 }
 
-async function generalVolunteers() {
+async function formsVolunteers() {
   return await makeRequest("/forms/volunteer", { method: "GET" });
+}
+
+async function confirmedVolunteers() {
+  return await makeRequest("/volunteers", { method: "GET" });
 }
 
 const deleteEvent = async (eventId) => {
   return await makeRequest(`/event/${eventId}`, {
+    method: "DELETE",
+  });
+};
+
+const deleteVolunteer = async (eventId, volunteerId) => {
+  return await makeRequest(`/event/${eventId}/volunteer/${volunteerId}`, {
     method: "DELETE",
   });
 };
@@ -73,6 +101,11 @@ export {
   deleteEvent,
   createVolunteer,
   eventVolunteers,
-  generalVolunteers,
+  formsVolunteers,
   addVolunteerToEvent,
+  signOut,
+  signUp,
+  changePassword,
+  confirmedVolunteers,
+  deleteVolunteer,
 };

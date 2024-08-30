@@ -11,11 +11,16 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   Input,
   ModalCloseButton,
   Select,
 } from "@chakra-ui/react";
-import { createVolunteer } from "../../services/index.js";
+import { createVolunteer, myInfo, signOut } from "../../services/index.js";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function Formulario() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +31,28 @@ export default function Formulario() {
   const [email, setEmail] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [eventName, setEventName] = useState("");
+  const [isLogged, setIsLogged] = useState(false);
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      try {
+        const user = await myInfo();
+        if (user) setIsLogged(true);
+      } catch {
+        setIsLogged(false);
+      }
+    };
+    fetchInfo();
+  }, []);
+
+  const handleSignOut = async (obj) => {
+    try {
+      await signOut();
+      window.location.reload();
+    } catch (error) {
+      console.error("Error sign out:", error);
+    }
+  };
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -41,7 +68,7 @@ export default function Formulario() {
   const handleSubmit = async (obj) => {
     try {
       await createVolunteer(obj);
-      handleOpenModal;
+      handleOpenModal();
     } catch (error) {
       console.error("Error creating volunteer:", error);
     }
@@ -75,14 +102,31 @@ export default function Formulario() {
       <Sidebar selectedPage={2} />
       <Flex flexDirection={"column"} width={"100%"}>
         <Flex align="flex-end" justify="flex-end" m={5}>
-          <Link href="/signin" passHref>
-            <Button
-              backgroundColor={"transparent"}
-              _hover={{ backgroundColor: "transparent" }}
-            >
-              <FaUserAlt size={30} />
-            </Button>
-          </Link>
+          {isLogged == true ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                backgroundColor={"transparent"}
+                rightIcon={<ChevronDownIcon />}
+              >
+                <FaUserAlt size={30} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={() => (window.location.href = "/change-password")}
+                >
+                  Trocar senha
+                </MenuItem>
+                <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Link href="/signin" passHref>
+              <Button backgroundColor={"transparent"}>
+                <FaUserAlt size={30} />
+              </Button>
+            </Link>
+          )}
         </Flex>
 
         <Flex
@@ -131,7 +175,6 @@ export default function Formulario() {
               mb={3}
               placeholder="Telefone"
               backgroundColor={"#fff"}
-              type="number"
               _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
               width={"100%"}
               _focus={{

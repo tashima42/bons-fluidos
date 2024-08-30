@@ -2,7 +2,6 @@
 import Sidebar from "@/components/sidebar";
 import { Flex, Box, Text, Button, Input } from "@chakra-ui/react";
 import { FaUserAlt, FaCheckCircle } from "react-icons/fa";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Calendar from "react-calendar";
 import { FaUsersGear } from "react-icons/fa6";
@@ -17,11 +16,13 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   TableContainer,
   ModalCloseButton,
 } from "@chakra-ui/react";
@@ -32,9 +33,14 @@ import {
   events,
   eventVolunteers,
   deleteEvent,
-  generalVolunteers,
+  confirmedVolunteers,
   addVolunteerToEvent,
+  deleteVolunteer,
+  formsVolunteers,
+  signOut,
 } from "../../services/index.js";
+import { useEffect, useState } from "react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function CriarEvento() {
   const [title, setTitle] = useState("");
@@ -59,6 +65,28 @@ export default function CriarEvento() {
   const [volunteerId, setVolunteerId] = useState();
   const [eventVolunteersList, setEventVolunteersList] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState();
+  const [isLogged, setIsLogged] = useState(false);
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      try {
+        const user = await myInfo();
+        if (user) setIsLogged(true);
+      } catch {
+        setIsLogged(false);
+      }
+    };
+    fetchInfo();
+  }, []);
+
+  const handleSignOut = async (obj) => {
+    try {
+      await signOut();
+      window.location.reload();
+    } catch (error) {
+      console.error("Error sign out:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -81,17 +109,44 @@ export default function CriarEvento() {
 
   const fetchVolunteersList = async (id) => {
     try {
-      const data = await eventVolunteers(id);
-      const volunteers = data.map((volunteer) => volunteer);
-      setEventVolunteersList(volunteers);
+      const eventVolunteersData = await eventVolunteers(id);
+
+      const allVolunteers = await formsVolunteers();
+
+      if (
+        !Array.isArray(eventVolunteersData) ||
+        !Array.isArray(allVolunteers)
+      ) {
+        throw new Error("Os dados recebidos não são arrays.");
+      }
+
+      const eventVolunteersMap = new Map(
+        eventVolunteersData.map((volunteer) => [volunteer.email, volunteer]),
+      );
+
+      const filteredVolunteers = allVolunteers
+        .map((volunteer) => {
+          const eventVolunteer = eventVolunteersMap.get(volunteer.email);
+          if (eventVolunteer) {
+            return {
+              ...volunteer,
+              eventVolunteerId: eventVolunteer.id,
+            };
+          }
+          return null;
+        })
+        .filter((volunteer) => volunteer !== null);
+
+      setEventVolunteersList(filteredVolunteers);
+      console.log(filteredVolunteers);
     } catch (err) {
-      console.error("Error fetching events:", err.message);
+      setEventVolunteersList([]);
     }
   };
 
   const fetchGeneralVolunteersList = async (id) => {
     try {
-      const data = await generalVolunteers();
+      const data = await confirmedVolunteers();
       const volunteers = data.map((volunteer) => volunteer);
       setVolunteersList(volunteers);
     } catch (err) {
@@ -111,8 +166,18 @@ export default function CriarEvento() {
   const handleAddVolunteer = async (eventId, volunteerId) => {
     try {
       await addVolunteerToEvent(eventId, volunteerId);
+      fetchVolunteersList(eventId);
     } catch (error) {
       console.error("Error adding volunteer:", error);
+    }
+  };
+
+  const handleRemoveVolunteer = async (eventId, volunteerId) => {
+    try {
+      await deleteVolunteer(eventId, volunteerId);
+      fetchVolunteersList(eventId);
+    } catch (error) {
+      console.error("Error removing volunteer:", error);
     }
   };
 
@@ -122,6 +187,11 @@ export default function CriarEvento() {
       setEventsList((prevEvents) =>
         prevEvents.filter((event) => event.id !== id),
       );
+      setFilteredEvents((prevEvents) =>
+        prevEvents.filter((event) => event.id !== id),
+      );
+      window.location.reload();
+      setIsOpen(false);
     } catch (error) {
       console.error("Error deleting event:", error);
     }
@@ -168,17 +238,34 @@ export default function CriarEvento() {
 
   return (
     <Flex flexDirection={"row"}>
-      <Sidebar selectedPage={2} />
+      <Sidebar selectedPage={5} />
       <Flex flexDirection={"column"} width={"100%"}>
         <Flex align="flex-end" justify="flex-end" m={5}>
-          <Link href="/signin" passHref>
-            <Button
-              backgroundColor={"transparent"}
-              _hover={{ backgroundColor: "transparent" }}
-            >
-              <FaUserAlt size={30} />
-            </Button>
-          </Link>
+          {isLogged == true ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                backgroundColor={"transparent"}
+                rightIcon={<ChevronDownIcon />}
+              >
+                <FaUserAlt size={30} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={() => (window.location.href = "/change-password")}
+                >
+                  Trocar senha
+                </MenuItem>
+                <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Link href="/signin" passHref>
+              <Button backgroundColor={"transparent"}>
+                <FaUserAlt size={30} />
+              </Button>
+            </Link>
+          )}
         </Flex>
 
         <Flex
@@ -225,7 +312,7 @@ export default function CriarEvento() {
       <Modal
         isOpen={isVolunteersOpen}
         onClose={onCloseVolunteersModal}
-        size={"lg"}
+        size={"2xl"}
       >
         <ModalOverlay />
         <ModalContent width={"100%"} backgroundColor={"#FFE8EF"}>
@@ -251,7 +338,9 @@ export default function CriarEvento() {
                     onChange={(e) => setVolunteerId(e.target.value)}
                   >
                     {volunteersList.map((volunteer) => (
-                      <option value={volunteer.id}>{volunteer.name}</option>
+                      <option value={volunteer.id}>
+                        {volunteer.name} - {volunteer.email}
+                      </option>
                     ))}
                   </Select>
                   <Button
@@ -270,23 +359,46 @@ export default function CriarEvento() {
                     Adicionar Voluntário/Palestrante
                   </Button>
 
-                  <TableContainer>
+                  <TableContainer
+                    borderWidth={1}
+                    borderColor={"#D92353"}
+                    overflow={"auto"}
+                    width={"100%"}
+                    maxHeight={"200px"}
+                  >
                     <Table size="sm">
-                      <Thead>
+                      <Thead backgroundColor={"#D92353"}>
                         <Tr>
-                          <Th>Nome</Th>
-                          <Th>Telefone</Th>
-                          <Th>Email</Th>
-                          <Th>Tipo</Th>
+                          <Th color={"white"}>Nome</Th>
+                          <Th color={"white"}>Telefone</Th>
+                          <Th color={"white"}>Email</Th>
+                          <Th color={"white"}>-</Th>
                         </Tr>
                       </Thead>
-                      <Tbody>
-                        {eventVolunteersList.map((volunteer) => (
-                          <Tr>
+                      <Tbody borderWidth={0}>
+                        {eventVolunteersList.map((volunteer, index) => (
+                          <Tr
+                            key={volunteer.id}
+                            bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                            fontFamily="Arial"
+                            color="black"
+                            fontWeight="light"
+                          >
                             <Td>{volunteer.name}</Td>
                             <Td>{volunteer.phone}</Td>
                             <Td>{volunteer.email}</Td>
-                            <Td>{volunteer.role}</Td>
+                            <Td
+                              _hover={{ cursor: "pointer" }}
+                              color={"#E11F4C"}
+                              onClick={() =>
+                                handleRemoveVolunteer(
+                                  selectedEventId,
+                                  volunteer.eventVolunteerId,
+                                )
+                              }
+                            >
+                              Remover
+                            </Td>
                           </Tr>
                         ))}
                       </Tbody>
