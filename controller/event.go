@@ -67,12 +67,12 @@ func (c *Controller) GetEvents(ctx *fiber.Ctx) error {
 	events, err := database.GetEvents(c.DB)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "no events found")
+			return ctx.Status(http.StatusOK).JSON(make([]string, 0))
 		}
 		return err
 	}
 	if len(events) == 0 {
-		return fiber.NewError(http.StatusNotFound, "no events found")
+		return ctx.Status(http.StatusOK).JSON(make([]string, 0))
 	}
 	return ctx.Status(http.StatusOK).JSON(events)
 }
@@ -137,7 +137,7 @@ func (c *Controller) EventVolunteers(ctx *fiber.Ctx) error {
 		return err
 	}
 	if len(volunteers) == 0 {
-		return fiber.NewError(http.StatusNotFound, "no volunteers found for event: "+eventID)
+		return ctx.Status(http.StatusOK).JSON("[]")
 	}
 	return ctx.Status(http.StatusOK).JSON(volunteers)
 }
@@ -233,7 +233,7 @@ func (c *Controller) ListEventParticipants(ctx *fiber.Ctx) error {
 	eventParticipants, err := database.GetEventParticipants(c.DB, eventID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(http.StatusNotFound, "event doesn't exists")
+			return ctx.Status(http.StatusOK).JSON("[]")
 		}
 		return err
 	}
