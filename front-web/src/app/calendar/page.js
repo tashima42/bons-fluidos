@@ -15,15 +15,14 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem, 
+  MenuItem,
   Input,
   ModalCloseButton,
 } from "@chakra-ui/react";
 import "./style.css";
 import { events } from "../../services/index.js";
 import { myInfo, signOut } from "../../services/index.js";
-import { ChevronDownIcon } from "@chakra-ui/icons"; 
-
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function Calendario() {
   const [value, onChange] = useState(new Date());
@@ -39,8 +38,7 @@ export default function Calendario() {
     const fetchInfo = async () => {
       try {
         const user = await myInfo();
-        if(user)
-          setIsLogged(true);
+        if (user) setIsLogged(true);
       } catch {
         setIsLogged(false);
       }
@@ -90,26 +88,26 @@ export default function Calendario() {
 
   function getDateOnly(isoString) {
     const date = new Date(isoString);
-    
+
     const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   }
-  
+
   const handleDateClick = (date) => {
     setSelectedDate(date);
     const selectedDate = getDateOnly(date);
-    const filteredEvents = eventsList.filter(event => {
+    const filteredEvents = eventsList.filter((event) => {
       const formattedDate = getDateOnly(event.startDate);
       return formattedDate === selectedDate;
     });
-  
+
     setFilteredEvents(filteredEvents);
     setIsOpen(true);
   };
-  
+
   const handleCloseModal = () => {
     setIsOpen(false);
   };
@@ -132,26 +130,32 @@ export default function Calendario() {
     <Flex flexDirection={"row"}>
       <Sidebar selectedPage={1} />
       <Flex flexDirection={"column"} width={"100%"}>
-      <Flex align="flex-end" justify="flex-end" m={5}>
-        {isLogged == true ?
-        (
-          <Menu>
-  <MenuButton as={Button} backgroundColor={"transparent"} rightIcon={<ChevronDownIcon />}>
-  <FaUserAlt size={30} />
-  </MenuButton>
-  <MenuList>
-    <MenuItem onClick={() =>  window.location.href = "/change-password"}>Trocar senha</MenuItem>
-    <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
-  </MenuList>
-</Menu>
-        ): (
-          <Link href="/signin" passHref>
-            <Button backgroundColor={"transparent"}>
-  <FaUserAlt size={30} />
-            </Button>
-          </Link>
-        )}
-
+        <Flex align="flex-end" justify="flex-end" m={5}>
+          {isLogged == true ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                backgroundColor={"transparent"}
+                rightIcon={<ChevronDownIcon />}
+              >
+                <FaUserAlt size={30} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={() => (window.location.href = "/change-password")}
+                >
+                  Trocar senha
+                </MenuItem>
+                <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Link href="/signin" passHref>
+              <Button backgroundColor={"transparent"}>
+                <FaUserAlt size={30} />
+              </Button>
+            </Link>
+          )}
         </Flex>
         <Flex
           direction={"row"}
@@ -188,7 +192,7 @@ export default function Calendario() {
                 }}
                 locale={"pt-BR"}
                 onClickDay={(date) => {
-                  handleDateClick(date)
+                  handleDateClick(date);
                 }}
               />
             </Box>

@@ -15,7 +15,7 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem, 
+  MenuItem,
   Thead,
   Tbody,
   Tr,
@@ -24,9 +24,8 @@ import {
   Th,
   TableContainer,
 } from "@chakra-ui/react";
-import { formsVolunteers, myInfo, signOut  } from "../../services/index.js";
-import { ChevronDownIcon } from "@chakra-ui/icons"; 
-
+import { formsVolunteers, myInfo, signOut } from "../../services/index.js";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function ResultadosInscricao() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,8 +37,7 @@ export default function ResultadosInscricao() {
     const fetchInfo = async () => {
       try {
         const user = await myInfo();
-        if(user)
-          setIsLogged(true);
+        if (user) setIsLogged(true);
       } catch {
         setIsLogged(false);
       }
@@ -57,7 +55,7 @@ export default function ResultadosInscricao() {
   };
 
   const handleOpenModal = (user) => {
-    setUser(user)
+    setUser(user);
     setIsOpen(true);
   };
   const handleCloseModal = () => {
@@ -74,16 +72,16 @@ export default function ResultadosInscricao() {
       }
     };
     fetchVolunteers();
-  }, []); 
-  
+  }, []);
+
   const formatDateTable = (isoString) => {
     const date = new Date(isoString);
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
     const year = date.getUTCFullYear();
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    
+    const hours = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
 
@@ -91,26 +89,32 @@ export default function ResultadosInscricao() {
     <Flex flexDirection={"row"}>
       <Sidebar selectedPage={3} />
       <Flex flexDirection={"column"} width={"100%"}>
-      <Flex align="flex-end" justify="flex-end" m={5}>
-        {isLogged == true ?
-        (
-          <Menu>
-  <MenuButton as={Button} backgroundColor={"transparent"} rightIcon={<ChevronDownIcon />}>
-  <FaUserAlt size={30} />
-  </MenuButton>
-  <MenuList>
-    <MenuItem onClick={() =>  window.location.href = "/change-password"}>Trocar senha</MenuItem>
-    <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
-  </MenuList>
-</Menu>
-        ): (
-          <Link href="/signin" passHref>
-            <Button backgroundColor={"transparent"}>
-  <FaUserAlt size={30} />
-            </Button>
-          </Link>
-        )}
-
+        <Flex align="flex-end" justify="flex-end" m={5}>
+          {isLogged == true ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                backgroundColor={"transparent"}
+                rightIcon={<ChevronDownIcon />}
+              >
+                <FaUserAlt size={30} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={() => (window.location.href = "/change-password")}
+                >
+                  Trocar senha
+                </MenuItem>
+                <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Link href="/signin" passHref>
+              <Button backgroundColor={"transparent"}>
+                <FaUserAlt size={30} />
+              </Button>
+            </Link>
+          )}
         </Flex>
 
         <Flex
@@ -134,43 +138,45 @@ export default function ResultadosInscricao() {
             width={"70%"}
           >
             <TableContainer>
-            <Table variant="simple">
-  <Thead backgroundColor={"#D92353"}>
-    <Tr>
-      <Th color={"white"}>nome</Th>
-      <Th color={"white"}>telefone</Th>
-      <Th color={"white"}>email</Th>
-      <Th color={"white"}>tipo</Th>
-      <Th color={"white"}>título</Th>
-      <Th color={"white"}>data</Th>
-    </Tr>
-  </Thead>
-  <Tbody overflow={"auto"}>
-  {volunteers.map((volunteer, index) => (
-  <Tr
-    key={volunteer.id}
-    fontFamily="Arial"
-    color="black"
-    fontWeight="light"
-    bg={index % 2 === 0 ? '#FFE8EF' : 'white'} onClick={() => handleOpenModal(volunteer)}
-    _hover={{ cursor: 'pointer' }}
-                      
-  >
-    <Td>{volunteer.name}</Td>
-    <Td>{volunteer.phone}</Td>
-    <Td>{volunteer.email}</Td>
-    <Td>{volunteer.type}</Td>
-    <Td>{volunteer.eventName}</Td>
-    <Td>{volunteer.eventDate ? formatDateTable(volunteer.eventDate) : ""}</Td>
-  </Tr>
-))}
-
-  </Tbody>
-</Table>
-
-</TableContainer>
-            </Flex>
-         </Flex>
+              <Table variant="simple">
+                <Thead backgroundColor={"#D92353"}>
+                  <Tr>
+                    <Th color={"white"}>nome</Th>
+                    <Th color={"white"}>telefone</Th>
+                    <Th color={"white"}>email</Th>
+                    <Th color={"white"}>tipo</Th>
+                    <Th color={"white"}>título</Th>
+                    <Th color={"white"}>data</Th>
+                  </Tr>
+                </Thead>
+                <Tbody overflow={"auto"}>
+                  {volunteers.map((volunteer, index) => (
+                    <Tr
+                      key={volunteer.id}
+                      fontFamily="Arial"
+                      color="black"
+                      fontWeight="light"
+                      bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                      onClick={() => handleOpenModal(volunteer)}
+                      _hover={{ cursor: "pointer" }}
+                    >
+                      <Td>{volunteer.name}</Td>
+                      <Td>{volunteer.phone}</Td>
+                      <Td>{volunteer.email}</Td>
+                      <Td>{volunteer.type}</Td>
+                      <Td>{volunteer.eventName}</Td>
+                      <Td>
+                        {volunteer.eventDate
+                          ? formatDateTable(volunteer.eventDate)
+                          : ""}
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </Flex>
+        </Flex>
       </Flex>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
@@ -188,31 +194,33 @@ export default function ResultadosInscricao() {
                   mb={5}
                   height={"auto"}
                 >
-                      <Box
-                        backgroundColor={"white"}
-                        borderRadius={15}
-                        padding={15}
-                        margin={"2%"}
-                      >
-                        <Text>
-                          <b>Nome Completo:</b> {user.name ? user.name : ""}
-                        </Text>
-                        <Text>
-                          <b>Telefone:</b> {user.phone ? user.phone : ""}
-                        </Text>
-                        <Text>
-                          <b>Email:</b> {user.email ? user.email : ""}
-                        </Text>
-                        <Text>
-                          <b>Tipo:</b> {user.type ? user.type : ""}
-                        </Text>
-                        <Text>
-                          <b>Título da Palestra:</b> {user.eventName ? user.eventName : ""}
-                        </Text>
-                        <Text>
-                          <b>Data desejada:</b>  {user.eventDate ? formatDateTable(user.eventDate) : ""}
-                        </Text>
-                      </Box>
+                  <Box
+                    backgroundColor={"white"}
+                    borderRadius={15}
+                    padding={15}
+                    margin={"2%"}
+                  >
+                    <Text>
+                      <b>Nome Completo:</b> {user.name ? user.name : ""}
+                    </Text>
+                    <Text>
+                      <b>Telefone:</b> {user.phone ? user.phone : ""}
+                    </Text>
+                    <Text>
+                      <b>Email:</b> {user.email ? user.email : ""}
+                    </Text>
+                    <Text>
+                      <b>Tipo:</b> {user.type ? user.type : ""}
+                    </Text>
+                    <Text>
+                      <b>Título da Palestra:</b>{" "}
+                      {user.eventName ? user.eventName : ""}
+                    </Text>
+                    <Text>
+                      <b>Data desejada:</b>{" "}
+                      {user.eventDate ? formatDateTable(user.eventDate) : ""}
+                    </Text>
+                  </Box>
                 </Flex>
               </Flex>
             </Box>

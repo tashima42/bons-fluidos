@@ -23,8 +23,8 @@ export default function ChangePassword() {
     try {
       const obj = {
         password: password,
-        newPassword: newPassword
-      }
+        newPassword: newPassword,
+      };
       await changePassword(obj);
     } catch (error) {
       console.error("Erro:", error);

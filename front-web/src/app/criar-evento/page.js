@@ -22,7 +22,7 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem, 
+  MenuItem,
   TableContainer,
   ModalCloseButton,
 } from "@chakra-ui/react";
@@ -37,10 +37,10 @@ import {
   addVolunteerToEvent,
   deleteVolunteer,
   formsVolunteers,
-  signOut
+  signOut,
 } from "../../services/index.js";
 import { useEffect, useState } from "react";
-import { ChevronDownIcon } from "@chakra-ui/icons"; 
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function CriarEvento() {
   const [title, setTitle] = useState("");
@@ -71,8 +71,7 @@ export default function CriarEvento() {
     const fetchInfo = async () => {
       try {
         const user = await myInfo();
-        if(user)
-          setIsLogged(true);
+        if (user) setIsLogged(true);
       } catch {
         setIsLogged(false);
       }
@@ -107,37 +106,44 @@ export default function CriarEvento() {
       .then((data) => console.log(data))
       .catch((err) => console.log(err.message));
   }, []);
-  
+
   const fetchVolunteersList = async (id) => {
     try {
       const eventVolunteersData = await eventVolunteers(id);
-      
+
       const allVolunteers = await formsVolunteers();
-  
-      if (!Array.isArray(eventVolunteersData) || !Array.isArray(allVolunteers)) {
+
+      if (
+        !Array.isArray(eventVolunteersData) ||
+        !Array.isArray(allVolunteers)
+      ) {
         throw new Error("Os dados recebidos não são arrays.");
       }
-  
-      const eventVolunteersMap = new Map(eventVolunteersData.map(volunteer => [volunteer.email, volunteer]));
-  
-      const filteredVolunteers = allVolunteers.map(volunteer => {
-        const eventVolunteer = eventVolunteersMap.get(volunteer.email);
-        if (eventVolunteer) {
-          return {
-            ...volunteer,
-            eventVolunteerId: eventVolunteer.id,
-          };
-        }
-        return null;
-      }).filter(volunteer => volunteer !== null); 
-  
+
+      const eventVolunteersMap = new Map(
+        eventVolunteersData.map((volunteer) => [volunteer.email, volunteer]),
+      );
+
+      const filteredVolunteers = allVolunteers
+        .map((volunteer) => {
+          const eventVolunteer = eventVolunteersMap.get(volunteer.email);
+          if (eventVolunteer) {
+            return {
+              ...volunteer,
+              eventVolunteerId: eventVolunteer.id,
+            };
+          }
+          return null;
+        })
+        .filter((volunteer) => volunteer !== null);
+
       setEventVolunteersList(filteredVolunteers);
       console.log(filteredVolunteers);
     } catch (err) {
-      setEventVolunteersList([])
+      setEventVolunteersList([]);
     }
   };
-  
+
   const fetchGeneralVolunteersList = async (id) => {
     try {
       const data = await confirmedVolunteers();
@@ -165,32 +171,31 @@ export default function CriarEvento() {
       console.error("Error adding volunteer:", error);
     }
   };
-  
-const handleRemoveVolunteer = async (eventId, volunteerId) => {
-  try {
-    await deleteVolunteer(eventId, volunteerId);
-    fetchVolunteersList(eventId);
-  } catch (error) {
-    console.error("Error removing volunteer:", error);
-  }
-};
 
-  
-const handleDeleteEvent = async (id) => {
-  try {
-    await deleteEvent(id);
-    setEventsList((prevEvents) =>
-      prevEvents.filter((event) => event.id !== id),
-    );
-    setFilteredEvents((prevEvents) =>
-      prevEvents.filter((event) => event.id !== id),
-    );
-    window.location.reload();
-    setIsOpen(false);
-  } catch (error) {
-    console.error("Error deleting event:", error);
-  }
-};
+  const handleRemoveVolunteer = async (eventId, volunteerId) => {
+    try {
+      await deleteVolunteer(eventId, volunteerId);
+      fetchVolunteersList(eventId);
+    } catch (error) {
+      console.error("Error removing volunteer:", error);
+    }
+  };
+
+  const handleDeleteEvent = async (id) => {
+    try {
+      await deleteEvent(id);
+      setEventsList((prevEvents) =>
+        prevEvents.filter((event) => event.id !== id),
+      );
+      setFilteredEvents((prevEvents) =>
+        prevEvents.filter((event) => event.id !== id),
+      );
+      window.location.reload();
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
 
   function formateHour(datetime) {
     const date = new Date(datetime);
@@ -235,26 +240,32 @@ const handleDeleteEvent = async (id) => {
     <Flex flexDirection={"row"}>
       <Sidebar selectedPage={5} />
       <Flex flexDirection={"column"} width={"100%"}>
-      <Flex align="flex-end" justify="flex-end" m={5}>
-        {isLogged == true ?
-        (
-          <Menu>
-  <MenuButton as={Button} backgroundColor={"transparent"} rightIcon={<ChevronDownIcon />}>
-  <FaUserAlt size={30} />
-  </MenuButton>
-  <MenuList>
-    <MenuItem onClick={() =>  window.location.href = "/change-password"}>Trocar senha</MenuItem>
-    <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
-  </MenuList>
-</Menu>
-        ): (
-          <Link href="/signin" passHref>
-            <Button backgroundColor={"transparent"}>
-  <FaUserAlt size={30} />
-            </Button>
-          </Link>
-        )}
-
+        <Flex align="flex-end" justify="flex-end" m={5}>
+          {isLogged == true ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                backgroundColor={"transparent"}
+                rightIcon={<ChevronDownIcon />}
+              >
+                <FaUserAlt size={30} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={() => (window.location.href = "/change-password")}
+                >
+                  Trocar senha
+                </MenuItem>
+                <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Link href="/signin" passHref>
+              <Button backgroundColor={"transparent"}>
+                <FaUserAlt size={30} />
+              </Button>
+            </Link>
+          )}
         </Flex>
 
         <Flex
@@ -327,7 +338,9 @@ const handleDeleteEvent = async (id) => {
                     onChange={(e) => setVolunteerId(e.target.value)}
                   >
                     {volunteersList.map((volunteer) => (
-                      <option value={volunteer.id}>{volunteer.name} - {volunteer.email}</option>
+                      <option value={volunteer.id}>
+                        {volunteer.name} - {volunteer.email}
+                      </option>
                     ))}
                   </Select>
                   <Button
@@ -346,9 +359,15 @@ const handleDeleteEvent = async (id) => {
                     Adicionar Voluntário/Palestrante
                   </Button>
 
-                  <TableContainer borderWidth={1} borderColor={"#D92353"}  overflow={"auto"} width={"100%"} maxHeight={"200px"}>
+                  <TableContainer
+                    borderWidth={1}
+                    borderColor={"#D92353"}
+                    overflow={"auto"}
+                    width={"100%"}
+                    maxHeight={"200px"}
+                  >
                     <Table size="sm">
-  <Thead backgroundColor={"#D92353"}>
+                      <Thead backgroundColor={"#D92353"}>
                         <Tr>
                           <Th color={"white"}>Nome</Th>
                           <Th color={"white"}>Telefone</Th>
@@ -358,14 +377,28 @@ const handleDeleteEvent = async (id) => {
                       </Thead>
                       <Tbody borderWidth={0}>
                         {eventVolunteersList.map((volunteer, index) => (
-                          <Tr key={volunteer.id}  bg={index % 2 === 0 ? '#FFE8EF' : 'white'}
-                          fontFamily="Arial"
-                          color="black"
-                          fontWeight="light">
+                          <Tr
+                            key={volunteer.id}
+                            bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                            fontFamily="Arial"
+                            color="black"
+                            fontWeight="light"
+                          >
                             <Td>{volunteer.name}</Td>
                             <Td>{volunteer.phone}</Td>
                             <Td>{volunteer.email}</Td>
-                            <Td _hover={{cursor: 'pointer'}}color={"#E11F4C"} onClick={()=> handleRemoveVolunteer(selectedEventId, volunteer.eventVolunteerId)}>Remover</Td>
+                            <Td
+                              _hover={{ cursor: "pointer" }}
+                              color={"#E11F4C"}
+                              onClick={() =>
+                                handleRemoveVolunteer(
+                                  selectedEventId,
+                                  volunteer.eventVolunteerId,
+                                )
+                              }
+                            >
+                              Remover
+                            </Td>
                           </Tr>
                         ))}
                       </Tbody>

@@ -14,14 +14,13 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem, 
+  MenuItem,
   Input,
   ModalCloseButton,
   Select,
 } from "@chakra-ui/react";
 import { createVolunteer, myInfo, signOut } from "../../services/index.js";
-import { ChevronDownIcon } from "@chakra-ui/icons"; 
-
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function Formulario() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,8 +37,7 @@ export default function Formulario() {
     const fetchInfo = async () => {
       try {
         const user = await myInfo();
-        if(user)
-          setIsLogged(true);
+        if (user) setIsLogged(true);
       } catch {
         setIsLogged(false);
       }
@@ -103,26 +101,32 @@ export default function Formulario() {
     <Flex flexDirection={"row"}>
       <Sidebar selectedPage={2} />
       <Flex flexDirection={"column"} width={"100%"}>
-      <Flex align="flex-end" justify="flex-end" m={5}>
-        {isLogged == true ?
-        (
-          <Menu>
-  <MenuButton as={Button} backgroundColor={"transparent"} rightIcon={<ChevronDownIcon />}>
-  <FaUserAlt size={30} />
-  </MenuButton>
-  <MenuList>
-    <MenuItem onClick={() =>  window.location.href = "/change-password"}>Trocar senha</MenuItem>
-    <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
-  </MenuList>
-</Menu>
-        ): (
-          <Link href="/signin" passHref>
-            <Button backgroundColor={"transparent"}>
-  <FaUserAlt size={30} />
-            </Button>
-          </Link>
-        )}
-
+        <Flex align="flex-end" justify="flex-end" m={5}>
+          {isLogged == true ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                backgroundColor={"transparent"}
+                rightIcon={<ChevronDownIcon />}
+              >
+                <FaUserAlt size={30} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={() => (window.location.href = "/change-password")}
+                >
+                  Trocar senha
+                </MenuItem>
+                <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Link href="/signin" passHref>
+              <Button backgroundColor={"transparent"}>
+                <FaUserAlt size={30} />
+              </Button>
+            </Link>
+          )}
         </Flex>
 
         <Flex

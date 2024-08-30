@@ -11,7 +11,7 @@ async function signIn(email, password) {
 async function signUp(email, name, role, password) {
   return await makeRequest("/user", {
     method: "POST",
-    body: JSON.stringify({ email, name, role, password}),
+    body: JSON.stringify({ email, name, role, password }),
   });
 }
 
@@ -29,7 +29,6 @@ async function myInfo() {
 async function signOut() {
   return await makeRequest("/user/signout", { method: "POST" });
 }
-
 
 async function events() {
   return await makeRequest("/events", { method: "GET" });
@@ -108,5 +107,5 @@ export {
   signUp,
   changePassword,
   confirmedVolunteers,
-  deleteVolunteer
+  deleteVolunteer,
 };

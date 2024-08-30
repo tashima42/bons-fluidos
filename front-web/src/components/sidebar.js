@@ -33,20 +33,30 @@ export default function Sidebar({ selectedPage }) {
         align="center"
         height="100%"
       >
-        <Image
-          src="/img/logo.png"
-          maxWidth="80%"
-          alt="Bons Fluídos"
-          pt={6}
-        />
+        <Image src="/img/logo.png" maxWidth="80%" alt="Bons Fluídos" pt={6} />
         <Flex flexDirection="column" gap={3}>
           {[
             { href: "/", label: "HOME", index: 0 },
             { href: "/calendar", label: "PALESTRAS", index: 1 },
             { href: "/inscricao", label: "INSCRIÇÃO", index: 2 },
-            { href: "/resultados-inscricao", label: "RESULTADOS DA INSCRIÇÃO", index: 3, adminOnly: true },
-            { href: "/signup", label: "CRIAR CONTA", index: 4, adminOnly: true },
-            { href: "/criar-evento", label: "CRIAR EVENTO", index: 5, adminOnly: true },
+            {
+              href: "/resultados-inscricao",
+              label: "RESULTADOS DA INSCRIÇÃO",
+              index: 3,
+              adminOnly: true,
+            },
+            {
+              href: "/signup",
+              label: "CRIAR CONTA",
+              index: 4,
+              adminOnly: true,
+            },
+            {
+              href: "/criar-evento",
+              label: "CRIAR EVENTO",
+              index: 5,
+              adminOnly: true,
+            },
           ].map(({ href, label, index, adminOnly }) => {
             if (adminOnly && !isAdmin) return null;
             return (
@@ -63,10 +73,7 @@ export default function Sidebar({ selectedPage }) {
             );
           })}
         </Flex>
-        <Image
-          src="/img/sidebar.png"
-          alt="Bons Fluídos"
-        />
+        <Image src="/img/sidebar.png" alt="Bons Fluídos" />
         <Button
           pb={6}
           color="black"

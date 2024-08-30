@@ -1,16 +1,21 @@
-"use client"
+"use client";
 import Sidebar from "@/components/sidebar";
-import { Flex, Box, Text, Button, Menu,
+import {
+  Flex,
+  Box,
+  Text,
+  Button,
+  Menu,
   MenuButton,
   MenuList,
-  MenuItem,  } from "@chakra-ui/react";
+  MenuItem,
+} from "@chakra-ui/react";
 import { FaUserAlt } from "react-icons/fa";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { myInfo, signOut } from "../../services/index.js";
-import { ChevronDownIcon } from "@chakra-ui/icons"; 
-
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function Inscricao() {
   const [isLogged, setIsLogged] = useState(false);
@@ -19,8 +24,7 @@ export default function Inscricao() {
     const fetchInfo = async () => {
       try {
         const user = await myInfo();
-        if(user)
-          setIsLogged(true);
+        if (user) setIsLogged(true);
       } catch {
         setIsLogged(false);
       }
@@ -40,26 +44,32 @@ export default function Inscricao() {
     <Flex flexDirection={"row"} width={"100%"}>
       <Sidebar />
       <Flex flexDirection={"column"} width={"100%"}>
-      <Flex align="flex-end" justify="flex-end" m={5}>
-        {isLogged == true ?
-        (
-          <Menu>
-  <MenuButton as={Button} backgroundColor={"transparent"} rightIcon={<ChevronDownIcon />}>
-  <FaUserAlt size={30} />
-  </MenuButton>
-  <MenuList>
-    <MenuItem onClick={() =>  window.location.href = "/change-password"}>Trocar senha</MenuItem>
-    <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
-  </MenuList>
-</Menu>
-        ): (
-          <Link href="/signin" passHref>
-            <Button backgroundColor={"transparent"}>
-  <FaUserAlt size={30} />
-            </Button>
-          </Link>
-        )}
-
+        <Flex align="flex-end" justify="flex-end" m={5}>
+          {isLogged == true ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                backgroundColor={"transparent"}
+                rightIcon={<ChevronDownIcon />}
+              >
+                <FaUserAlt size={30} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={() => (window.location.href = "/change-password")}
+                >
+                  Trocar senha
+                </MenuItem>
+                <MenuItem onClick={() => handleSignOut()}>Sair</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Link href="/signin" passHref>
+              <Button backgroundColor={"transparent"}>
+                <FaUserAlt size={30} />
+              </Button>
+            </Link>
+          )}
         </Flex>
         <Box textAlign={"center"} padding={"7%"} fontWeight={500}>
           <Text

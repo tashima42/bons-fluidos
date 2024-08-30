@@ -8,7 +8,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Select
+  Select,
 } from "@chakra-ui/react";
 import React from "react";
 import Link from "next/link";
@@ -141,12 +141,7 @@ export default function SignUp() {
                 >
                   Criar Conta
                 </Button>
-                <Text
-                  mt="5%"
-                  fontWeight={600}
-                  textAlign="center"
-                  width="70%"
-                >
+                <Text mt="5%" fontWeight={600} textAlign="center" width="70%">
                   Não esqueça de{" "}
                   <span style={{ color: "#D92353", fontWeight: "bold" }}>
                     fornecer os dados
