@@ -40,7 +40,7 @@ func (c *Controller) CreateEvent(ctx *fiber.Ctx) error {
 		return err
 	}
 	slog.Info(requestID + ": event created")
-	return ctx.JSON(map[string]interface{}{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]interface{}{"success": true})
 }
 
 func (c *Controller) GetEventByID(ctx *fiber.Ctx) error {
@@ -58,7 +58,7 @@ func (c *Controller) GetEventByID(ctx *fiber.Ctx) error {
 		}
 		return err
 	}
-	return ctx.JSON(event)
+	return ctx.Status(http.StatusOK).JSON(event)
 }
 
 func (c *Controller) GetEvents(ctx *fiber.Ctx) error {
@@ -74,7 +74,7 @@ func (c *Controller) GetEvents(ctx *fiber.Ctx) error {
 	if len(events) == 0 {
 		return fiber.NewError(http.StatusNotFound, "no events found")
 	}
-	return ctx.JSON(events)
+	return ctx.Status(http.StatusOK).JSON(events)
 }
 
 func (c *Controller) AddVolunteerToEvent(ctx *fiber.Ctx) error {
@@ -109,7 +109,7 @@ func (c *Controller) AddVolunteerToEvent(ctx *fiber.Ctx) error {
 		return errors.New("error adding volunteer to event: " + err.Error())
 	}
 	slog.Info(requestID + ": volunteer added to event")
-	return ctx.JSON(map[string]interface{}{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]interface{}{"success": true})
 }
 
 func (c *Controller) EventVolunteers(ctx *fiber.Ctx) error {
@@ -139,7 +139,7 @@ func (c *Controller) EventVolunteers(ctx *fiber.Ctx) error {
 	if len(volunteers) == 0 {
 		return fiber.NewError(http.StatusNotFound, "no volunteers found for event: "+eventID)
 	}
-	return ctx.JSON(volunteers)
+	return ctx.Status(http.StatusOK).JSON(volunteers)
 }
 
 func (c *Controller) DeleteEvent(ctx *fiber.Ctx) error {
@@ -164,7 +164,7 @@ func (c *Controller) DeleteEvent(ctx *fiber.Ctx) error {
 	if err := tx.Commit(); err != nil {
 		return err
 	}
-	return ctx.JSON(map[string]bool{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]bool{"success": true})
 }
 
 func (c *Controller) RemoveVolunteerFromEvent(ctx *fiber.Ctx) error {
@@ -189,7 +189,7 @@ func (c *Controller) RemoveVolunteerFromEvent(ctx *fiber.Ctx) error {
 		}
 		return err
 	}
-	return ctx.JSON(map[string]bool{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]bool{"success": true})
 }
 
 func (c *Controller) AddParticipantToEvent(ctx *fiber.Ctx) error {
@@ -218,7 +218,7 @@ func (c *Controller) AddParticipantToEvent(ctx *fiber.Ctx) error {
 		return err
 	}
 	slog.Info(requestID + ": event created")
-	return ctx.JSON(map[string]interface{}{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]interface{}{"success": true})
 }
 
 func (c *Controller) ListEventParticipants(ctx *fiber.Ctx) error {
@@ -237,7 +237,7 @@ func (c *Controller) ListEventParticipants(ctx *fiber.Ctx) error {
 		}
 		return err
 	}
-	return ctx.JSON(eventParticipants)
+	return ctx.Status(http.StatusOK).JSON(eventParticipants)
 }
 
 func (c *Controller) EventsByParticipantRA(ctx *fiber.Ctx) error {
@@ -256,10 +256,8 @@ func (c *Controller) EventsByParticipantRA(ctx *fiber.Ctx) error {
 		}
 		return err
 	}
-  if len(eventParticipant) == 0 {
-			return fiber.NewError(http.StatusNotFound, "participant has no events")
-  }
-	return ctx.JSON(eventParticipant)
+	if len(eventParticipant) == 0 {
+		return fiber.NewError(http.StatusNotFound, "participant has no events")
+	}
+	return ctx.Status(http.StatusOK).JSON(eventParticipant)
 }
-
-

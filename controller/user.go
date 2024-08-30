@@ -83,7 +83,7 @@ func (c *Controller) SignIn(ctx *fiber.Ctx) error {
 	cookie.SameSite = "None"
 	ctx.Cookie(cookie)
 
-	return ctx.JSON(map[string]interface{}{"token": jwt})
+	return ctx.Status(http.StatusOK).JSON(map[string]interface{}{"token": jwt})
 
 }
 
@@ -117,7 +117,7 @@ func (c *Controller) CreateUser(ctx *fiber.Ctx) error {
 		return errors.New(err.Error())
 	}
 	slog.Info(requestID + ": user created")
-	return ctx.JSON(map[string]interface{}{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]interface{}{"success": true})
 }
 
 func (c *Controller) ChangePassword(ctx *fiber.Ctx) error {
@@ -155,13 +155,13 @@ func (c *Controller) ChangePassword(ctx *fiber.Ctx) error {
 		return fiber.NewError(http.StatusInternalServerError, "failed to update password")
 	}
 	slog.Info(requestID + ": password updated")
-	return ctx.JSON(map[string]interface{}{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]interface{}{"success": true})
 }
 
 func (c *Controller) Me(ctx *fiber.Ctx) error {
 	user := ctx.Locals("user").(*database.User)
 	user.Password = ""
-	return ctx.JSON(user)
+	return ctx.Status(http.StatusOK).JSON(user)
 }
 
 func (c *Controller) SignOut(ctx *fiber.Ctx) error {
@@ -171,7 +171,7 @@ func (c *Controller) SignOut(ctx *fiber.Ctx) error {
 	cookie.Expires = time.Now().Add(-time.Hour * 24)
 	cookie.HTTPOnly = true
 	ctx.Cookie(cookie)
-	return ctx.JSON(map[string]interface{}{"success": true})
+	return ctx.Status(http.StatusOK).JSON(map[string]interface{}{"success": true})
 }
 
 func (c *Controller) ListVolunteers(ctx *fiber.Ctx) error {
@@ -190,5 +190,5 @@ func (c *Controller) ListVolunteers(ctx *fiber.Ctx) error {
 		return fiber.NewError(http.StatusNotFound, "no users found")
 	}
 
-	return ctx.JSON(users)
+	return ctx.Status(http.StatusOK).JSON(users)
 }
