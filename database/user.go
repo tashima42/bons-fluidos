@@ -25,9 +25,9 @@ func CreateUser(db *sqlx.DB, u *User) error {
 }
 
 func UpdatePassword(db *sqlx.DB, password, id string) error {
-  query := "UPDATE users SET password = $1, updated_at = $2 WHERE id = $3;"
-  _, err := db.Exec(query, password, time.Now(), id)
-  return err
+	query := "UPDATE users SET password = $1, updated_at = $2 WHERE id = $3;"
+	_, err := db.Exec(query, password, time.Now(), id)
+	return err
 }
 
 func GetUserByEmailTxx(tx *sqlx.Tx, email string) (*User, error) {
@@ -48,4 +48,24 @@ func GetUserByID(db *sqlx.DB, id string) (*User, error) {
 		return nil, err
 	}
 	return &u, nil
+}
+
+func GetVolunteerUsers(db *sqlx.DB) ([]User, error) {
+	users := make([]User, 0)
+	query := "SELECT id, name, email, role, created_at, updated_at FROM users WHERE role='volunteer';"
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var u User
+		if err := rows.Scan(&u.ID, &u.Name, &u.Email, &u.Role, &u.CreatedAt, &u.UpdatedAt); err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return users, nil
 }
