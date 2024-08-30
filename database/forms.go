@@ -1,7 +1,6 @@
 package database
 
 import (
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,8 +25,6 @@ func CreateVolunteerForm(db *sqlx.DB, v *VolunteerForm) error {
 	id := uuid.New()
 	query := "INSERT INTO volunteer_forms(id, name, email, phone, type, event_name, event_date) VALUES($1, $2, $3, $4, $5, $6, $7);"
 	eventDate := ""
-	log.Printf("v: %+v", v)
-	log.Printf("event date: %+v", v.EventDate)
 	if v.EventDate != nil {
 		eventDate = v.EventDate.Format(layout)
 	}
@@ -49,7 +46,6 @@ func GetVolunteerForms(db *sqlx.DB) ([]VolunteerForm, error) {
 		if err := rows.Scan(&v.ID, &v.Name, &v.Email, &v.Phone, &v.Type, &v.EventName, &date, &v.CreatedAt, &v.UpdatedAt); err != nil {
 			return nil, err
 		}
-		log.Println(date)
 		if date != "" && date != " " {
 			parsedDate, err := time.Parse(time.RFC3339, date)
 			if err != nil {
