@@ -137,7 +137,7 @@ func (c *Controller) EventVolunteers(ctx *fiber.Ctx) error {
 		return err
 	}
 	if len(volunteers) == 0 {
-		return ctx.Status(http.StatusOK).JSON("[]")
+		return ctx.Status(http.StatusOK).JSON(make([]string, 0))
 	}
 	return ctx.Status(http.StatusOK).JSON(volunteers)
 }
@@ -233,7 +233,7 @@ func (c *Controller) ListEventParticipants(ctx *fiber.Ctx) error {
 	eventParticipants, err := database.GetEventParticipants(c.DB, eventID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return ctx.Status(http.StatusOK).JSON("[]")
+			return ctx.Status(http.StatusOK).JSON(make([]string, 0))
 		}
 		return err
 	}
