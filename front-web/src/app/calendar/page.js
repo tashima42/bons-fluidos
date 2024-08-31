@@ -151,6 +151,7 @@ export default function Calendario() {
     setIsOpen(true);
   };
 
+
   const handleCloseModal = () => {
     setIsOpen(false);
   };
