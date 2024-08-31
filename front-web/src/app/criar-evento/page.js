@@ -38,7 +38,8 @@ import {
   deleteVolunteer,
   formsVolunteers,
   signOut,
-  addParticipant, getParticipants
+  addParticipant,
+  getParticipants,
 } from "../../services/index.js";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
@@ -191,10 +192,10 @@ export default function CriarEvento() {
       const obj = {
         name: participantName,
         ra: ra,
-        event_id: eventId
-      }
+        event_id: eventId,
+      };
       await addParticipant(obj);
-      console.log(eventId)
+      console.log(eventId);
       fetchParticipantList(eventId);
     } catch (error) {
       console.error("Error adding participant:", error);
@@ -209,8 +210,6 @@ export default function CriarEvento() {
       console.error("Error removing volunteer:", error);
     }
   };
-
-  
 
   const handleDeleteEvent = async (id) => {
     try {
@@ -390,51 +389,51 @@ export default function CriarEvento() {
                     Adicionar Voluntário/Palestrante
                   </Button>
                   <Box maxHeight={"300px"} overflowY={"auto"}>
-                  <TableContainer
-                    borderWidth={1}
-                    borderColor={"#D92353"}
-                    overflow={"auto"}
-                    width={"100%"}
-                    maxHeight={"200px"}
-                  >
-                    <Table size="sm">
-                      <Thead backgroundColor={"#D92353"}>
-                        <Tr>
-                          <Th color={"white"}>Nome</Th>
-                          <Th color={"white"}>Telefone</Th>
-                          <Th color={"white"}>Email</Th>
-                          <Th color={"white"}>-</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody borderWidth={0}>
-                        {eventVolunteersList.map((volunteer, index) => (
-                          <Tr
-                            key={volunteer.id}
-                            bg={index % 2 === 0 ? "#FFE8EF" : "white"}
-                            fontFamily="Arial"
-                            color="black"
-                            fontWeight="light"
-                          >
-                            <Td>{volunteer.name}</Td>
-                            <Td>{volunteer.phone}</Td>
-                            <Td>{volunteer.email}</Td>
-                            <Td
-                              _hover={{ cursor: "pointer" }}
-                              color={"#E11F4C"}
-                              onClick={() =>
-                                handleRemoveVolunteer(
-                                  selectedEventId,
-                                  volunteer.eventVolunteerId,
-                                )
-                              }
-                            >
-                              Remover
-                            </Td>
+                    <TableContainer
+                      borderWidth={1}
+                      borderColor={"#D92353"}
+                      overflow={"auto"}
+                      width={"100%"}
+                      maxHeight={"200px"}
+                    >
+                      <Table size="sm">
+                        <Thead backgroundColor={"#D92353"}>
+                          <Tr>
+                            <Th color={"white"}>Nome</Th>
+                            <Th color={"white"}>Telefone</Th>
+                            <Th color={"white"}>Email</Th>
+                            <Th color={"white"}>-</Th>
                           </Tr>
-                        ))}
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
+                        </Thead>
+                        <Tbody borderWidth={0}>
+                          {eventVolunteersList.map((volunteer, index) => (
+                            <Tr
+                              key={volunteer.id}
+                              bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                              fontFamily="Arial"
+                              color="black"
+                              fontWeight="light"
+                            >
+                              <Td>{volunteer.name}</Td>
+                              <Td>{volunteer.phone}</Td>
+                              <Td>{volunteer.email}</Td>
+                              <Td
+                                _hover={{ cursor: "pointer" }}
+                                color={"#E11F4C"}
+                                onClick={() =>
+                                  handleRemoveVolunteer(
+                                    selectedEventId,
+                                    volunteer.eventVolunteerId,
+                                  )
+                                }
+                              >
+                                Remover
+                              </Td>
+                            </Tr>
+                          ))}
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
                   </Box>
                 </Flex>
               </Flex>
@@ -445,44 +444,51 @@ export default function CriarEvento() {
                   <b>Participantes</b>
                 </Text>
 
-              <Flex flexDirection={"row"} justifyContent={"left"} align={"center"}>
-                  
-                      <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
-                        Nome: 
-                      </Text>
-                     <Input 
-                     width={"50%"}
-                        mb={3}
-                        placeholder="Nome"
-                        backgroundColor={"#fff"}
-                        _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                        _focus={{
-                          borderColor: "#E11F4C",
-                          boxShadow: `0 0 0 1px #E11F4C`,
-                        }}
-                        value={participantName}
-                        onChange={(e) => setParticipantName(e.target.value)}
-                      />
-                      </Flex>
-              <Flex flexDirection={"row"} justifyContent={"space-between"} align={"center"}>
-              <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
-                        R.A.
-                      </Text>
-                     <Input
-                        mb={3}
-                     width={"50%"}
-                        placeholder="R.A."
-                        backgroundColor={"#fff"}
-                        _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                        _focus={{
-                          borderColor: "#E11F4C",
-                          boxShadow: `0 0 0 1px #E11F4C`,
-                        }}
-                        value={ra}
-                        onChange={(e) => setRa(e.target.value)}
-                      />
-                      </Flex>
-                      <Flex
+                <Flex
+                  flexDirection={"row"}
+                  justifyContent={"left"}
+                  align={"center"}
+                >
+                  <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
+                    Nome:
+                  </Text>
+                  <Input
+                    width={"50%"}
+                    mb={3}
+                    placeholder="Nome"
+                    backgroundColor={"#fff"}
+                    _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+                    _focus={{
+                      borderColor: "#E11F4C",
+                      boxShadow: `0 0 0 1px #E11F4C`,
+                    }}
+                    value={participantName}
+                    onChange={(e) => setParticipantName(e.target.value)}
+                  />
+                </Flex>
+                <Flex
+                  flexDirection={"row"}
+                  justifyContent={"space-between"}
+                  align={"center"}
+                >
+                  <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
+                    R.A.
+                  </Text>
+                  <Input
+                    mb={3}
+                    width={"50%"}
+                    placeholder="R.A."
+                    backgroundColor={"#fff"}
+                    _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+                    _focus={{
+                      borderColor: "#E11F4C",
+                      boxShadow: `0 0 0 1px #E11F4C`,
+                    }}
+                    value={ra}
+                    onChange={(e) => setRa(e.target.value)}
+                  />
+                </Flex>
+                <Flex
                   direction={"column"}
                   align={"center"}
                   justifyContent={"space-between"}
@@ -504,40 +510,40 @@ export default function CriarEvento() {
                   </Button>
 
                   <Box maxHeight={"300px"} overflowY={"auto"}>
-                  <TableContainer
-                    borderWidth={1}
-                    borderColor={"#D92353"}
-                    overflow={"auto"}
-                    width={"100%"}
-                    maxHeight={"200px"}
-                  >
-                    <Table size="sm">
-                      <Thead backgroundColor={"#D92353"}>
-                        <Tr>
-                          <Th color={"white"}>Nome</Th>
-                          <Th color={"white"}>{" "}</Th>
-                          <Th color={"white"}>{" "}</Th>
-                          <Th color={"white"}>Ra</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody borderWidth={0}>
-                        {participantsList.map((participant, index) => (
-                          <Tr
-                            key={participant.ra}
-                            bg={index % 2 === 0 ? "#FFE8EF" : "white"}
-                            fontFamily="Arial"
-                            color="black"
-                            fontWeight="light"
-                          >
-                            <Td>{participant.name}</Td>
-                            <Td>{" "}</Td>
-                            <Td>{" "}</Td>
-                            <Td>{participant.ra}</Td>
+                    <TableContainer
+                      borderWidth={1}
+                      borderColor={"#D92353"}
+                      overflow={"auto"}
+                      width={"100%"}
+                      maxHeight={"200px"}
+                    >
+                      <Table size="sm">
+                        <Thead backgroundColor={"#D92353"}>
+                          <Tr>
+                            <Th color={"white"}>Nome</Th>
+                            <Th color={"white"}> </Th>
+                            <Th color={"white"}> </Th>
+                            <Th color={"white"}>Ra</Th>
                           </Tr>
-                        ))}
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
+                        </Thead>
+                        <Tbody borderWidth={0}>
+                          {participantsList.map((participant, index) => (
+                            <Tr
+                              key={participant.ra}
+                              bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                              fontFamily="Arial"
+                              color="black"
+                              fontWeight="light"
+                            >
+                              <Td>{participant.name}</Td>
+                              <Td> </Td>
+                              <Td> </Td>
+                              <Td>{participant.ra}</Td>
+                            </Tr>
+                          ))}
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
                   </Box>
                 </Flex>
               </Flex>

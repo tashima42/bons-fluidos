@@ -28,12 +28,12 @@ export default function ChangePassword() {
         newPassword: newPassword,
       };
       const response = await changePassword(obj);
-      
+
       if (response.success === true) {
         toast({
-          title: 'Senha alterada',
+          title: "Senha alterada",
           description: "Senha alterada com sucesso.",
-          status: 'success',
+          status: "success",
           duration: 5000,
           isClosable: true,
         });
@@ -42,30 +42,30 @@ export default function ChangePassword() {
           window.location.href = "/";
         }, 5000);
       } else {
-        if(response.message == "incorrect password"){
+        if (response.message == "incorrect password") {
           toast({
-            title: 'Erro',
-            description: 'Senha incorreta',
-            status: 'error',
+            title: "Erro",
+            description: "Senha incorreta",
+            status: "error",
             duration: 5000,
             isClosable: true,
           });
         } else {
-        toast({
-          title: 'Erro',
-          description: 'Não foi possível alterar a senha. Verifique os dados e tente novamente.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
+          toast({
+            title: "Erro",
+            description:
+              "Não foi possível alterar a senha. Verifique os dados e tente novamente.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
       }
-      }
-
     } catch (message) {
       toast({
-        title: 'Erro',
+        title: "Erro",
         description: message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
       });

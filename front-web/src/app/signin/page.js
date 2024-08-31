@@ -26,9 +26,9 @@ export default function Login() {
       const response = await signIn(email, password);
       if (response.token) {
         toast({
-          title: 'Usuário logado',
+          title: "Usuário logado",
           description: "Seja bem-vindo.",
-          status: 'success',
+          status: "success",
           duration: 5000,
           isClosable: true,
         });
@@ -37,42 +37,44 @@ export default function Login() {
           window.location.href = "/";
         }, 5000);
       } else {
-        if(response.message == "incorrect password"){
+        if (response.message == "incorrect password") {
           toast({
-            title: 'Erro',
-            description: 'Senha incorreta',
-            status: 'error',
+            title: "Erro",
+            description: "Senha incorreta",
+            status: "error",
             duration: 5000,
             isClosable: true,
           });
         } else {
-        toast({
-          title: 'Erro',
-          description: 'Não foi possível entrar na conta. Verifique os dados e tente novamente.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      }
+          toast({
+            title: "Erro",
+            description:
+              "Não foi possível entrar na conta. Verifique os dados e tente novamente.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
       }
     } catch (error) {
-      if(error == "incorrect password"){
+      if (error == "incorrect password") {
         toast({
-          title: 'Erro',
-          description: 'Senha incorreta',
-          status: 'error',
+          title: "Erro",
+          description: "Senha incorreta",
+          status: "error",
           duration: 5000,
           isClosable: true,
         });
       } else {
-      toast({
-        title: 'Erro',
-        description: 'Não foi possível entrar na conta. Verifique os dados e tente novamente.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+        toast({
+          title: "Erro",
+          description:
+            "Não foi possível entrar na conta. Verifique os dados e tente novamente.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 

@@ -118,61 +118,67 @@ export default function ResultadosInscricao() {
         </Flex>
 
         <Flex
-  textAlign={"center"}
-  flexDirection={"column"}
-  fontWeight={500}
-  width={"100%"}
-  height={"70%"}
-  justifyContent={"center"}
-  alignItems={"center"}
->
-  <Text mb={4} fontSize={"25px"}>
-    Resultados do formulário de{" "}
-    <span style={{ color: "#D92353", fontWeight: "bold" }}>inscrição</span>
-  </Text>
-  <Flex flexDirection={"column"} justifyContent={"center"} width={"70%"}>
-    <Box maxHeight={"700px"} overflowY={"auto"}>
-      <TableContainer>
-        <Table variant="simple">
-          <Thead backgroundColor={"#D92353"}>
-            <Tr>
-              <Th color={"white"}>nome</Th>
-              <Th color={"white"}>telefone</Th>
-              <Th color={"white"}>email</Th>
-              <Th color={"white"}>tipo</Th>
-              <Th color={"white"}>título</Th>
-              <Th color={"white"}>data</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {volunteers.map((volunteer, index) => (
-              <Tr
-                key={volunteer.id}
-                fontFamily="Arial"
-                color="black"
-                fontWeight="light"
-                bg={index % 2 === 0 ? "#FFE8EF" : "white"}
-                onClick={() => handleOpenModal(volunteer)}
-                _hover={{ cursor: "pointer" }}
-              >
-                <Td>{volunteer.name}</Td>
-                <Td>{volunteer.phone}</Td>
-                <Td>{volunteer.email}</Td>
-                <Td>{volunteer.type}</Td>
-                <Td>{volunteer.eventName}</Td>
-                <Td>
-                  {volunteer.eventDate ? formatDateTable(volunteer.eventDate) : ""}
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </Box>
-  </Flex>
-</Flex>
-
-
+          textAlign={"center"}
+          flexDirection={"column"}
+          fontWeight={500}
+          width={"100%"}
+          height={"70%"}
+          justifyContent={"center"}
+          alignItems={"center"}
+        >
+          <Text mb={4} fontSize={"25px"}>
+            Resultados do formulário de{" "}
+            <span style={{ color: "#D92353", fontWeight: "bold" }}>
+              inscrição
+            </span>
+          </Text>
+          <Flex
+            flexDirection={"column"}
+            justifyContent={"center"}
+            width={"70%"}
+          >
+            <Box maxHeight={"700px"} overflowY={"auto"}>
+              <TableContainer>
+                <Table variant="simple">
+                  <Thead backgroundColor={"#D92353"}>
+                    <Tr>
+                      <Th color={"white"}>nome</Th>
+                      <Th color={"white"}>telefone</Th>
+                      <Th color={"white"}>email</Th>
+                      <Th color={"white"}>tipo</Th>
+                      <Th color={"white"}>título</Th>
+                      <Th color={"white"}>data</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {volunteers.map((volunteer, index) => (
+                      <Tr
+                        key={volunteer.id}
+                        fontFamily="Arial"
+                        color="black"
+                        fontWeight="light"
+                        bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                        onClick={() => handleOpenModal(volunteer)}
+                        _hover={{ cursor: "pointer" }}
+                      >
+                        <Td>{volunteer.name}</Td>
+                        <Td>{volunteer.phone}</Td>
+                        <Td>{volunteer.email}</Td>
+                        <Td>{volunteer.type}</Td>
+                        <Td>{volunteer.eventName}</Td>
+                        <Td>
+                          {volunteer.eventDate
+                            ? formatDateTable(volunteer.eventDate)
+                            : ""}
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </Flex>
+        </Flex>
       </Flex>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />

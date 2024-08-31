@@ -18,7 +18,7 @@ import {
   Input,
   ModalCloseButton,
   Select,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import { createVolunteer, myInfo, signOut } from "../../services/index.js";
 import { ChevronDownIcon } from "@chakra-ui/icons";
@@ -34,7 +34,6 @@ export default function Formulario() {
   const [eventName, setEventName] = useState("");
   const [isLogged, setIsLogged] = useState(false);
   const toast = useToast();
-
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -73,24 +72,26 @@ export default function Formulario() {
 
   const handleSubmit = async (obj) => {
     if (username == "" || phone == "" || email == "") {
-      if(selectedOption == "speaker" && eventName == "" || eventDate == ""){
-      toast({
-        title: 'Erro',
-        description: 'Por favor, preencha todos os campos necessários antes de enviar o formulário.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-      return
-    } else {
+      if ((selectedOption == "speaker" && eventName == "") || eventDate == "") {
         toast({
-          title: 'Erro',
-          description: 'Por favor, preencha todos os campos necessários antes de enviar o formulário.',
-          status: 'error',
+          title: "Erro",
+          description:
+            "Por favor, preencha todos os campos necessários antes de enviar o formulário.",
+          status: "error",
           duration: 5000,
           isClosable: true,
         });
-        return
+        return;
+      } else {
+        toast({
+          title: "Erro",
+          description:
+            "Por favor, preencha todos os campos necessários antes de enviar o formulário.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
       }
     }
 
@@ -99,9 +100,9 @@ export default function Formulario() {
       handleOpenModal();
     } catch (error) {
       toast({
-        title: 'Erro',
-        description: 'Não foi possivel se inscrever',
-        status: 'error',
+        title: "Erro",
+        description: "Não foi possivel se inscrever",
+        status: "error",
         duration: 5000,
         isClosable: true,
       });

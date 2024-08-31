@@ -134,5 +134,5 @@ export {
   deleteVolunteer,
   addParticipant,
   getParticipants,
-  getEventsbyRA
+  getEventsbyRA,
 };
