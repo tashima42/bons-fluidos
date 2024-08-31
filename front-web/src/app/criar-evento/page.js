@@ -38,6 +38,7 @@ import {
   deleteVolunteer,
   formsVolunteers,
   signOut,
+  addParticipant, getParticipants
 } from "../../services/index.js";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
@@ -49,6 +50,8 @@ export default function CriarEvento() {
   const [endDate, setEndDate] = useState("");
   const [userDescription, setUserDescription] = useState("");
   const [name, setName] = useState("");
+  const [participantName, setParticipantName] = useState("");
+  const [ra, setRa] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
@@ -62,6 +65,7 @@ export default function CriarEvento() {
   const [highlightedDates, setHighlightedDates] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [volunteersList, setVolunteersList] = useState([]);
+  const [participantsList, setParticipantsList] = useState([]);
   const [volunteerId, setVolunteerId] = useState();
   const [eventVolunteersList, setEventVolunteersList] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState();
@@ -172,6 +176,31 @@ export default function CriarEvento() {
     }
   };
 
+  const fetchParticipantList = async (eventId) => {
+    try {
+      const data = await getParticipants(eventId);
+      const participants = data.map((participant) => participant);
+      setParticipantsList(participants);
+    } catch (err) {
+      console.error("Error fetching participants:", err.message);
+    }
+  };
+
+  const handleAddParticipant = async (eventId) => {
+    try {
+      const obj = {
+        name: participantName,
+        ra: ra,
+        event_id: eventId
+      }
+      await addParticipant(obj);
+      console.log(eventId)
+      fetchParticipantList(eventId);
+    } catch (error) {
+      console.error("Error adding participant:", error);
+    }
+  };
+
   const handleRemoveVolunteer = async (eventId, volunteerId) => {
     try {
       await deleteVolunteer(eventId, volunteerId);
@@ -180,6 +209,8 @@ export default function CriarEvento() {
       console.error("Error removing volunteer:", error);
     }
   };
+
+  
 
   const handleDeleteEvent = async (id) => {
     try {
@@ -321,7 +352,7 @@ export default function CriarEvento() {
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Box width={"100%"}>
+            <Box width={"100%"} overflow={"auto"}>
               <Flex flexDirection={"column"} justifyContent={"center"}>
                 <Text textAlign={"center"} mb={"3%"}>
                   <b>Voluntários/Palestrantes</b>
@@ -358,7 +389,7 @@ export default function CriarEvento() {
                   >
                     Adicionar Voluntário/Palestrante
                   </Button>
-
+                  <Box maxHeight={"300px"} overflowY={"auto"}>
                   <TableContainer
                     borderWidth={1}
                     borderColor={"#D92353"}
@@ -404,6 +435,110 @@ export default function CriarEvento() {
                       </Tbody>
                     </Table>
                   </TableContainer>
+                  </Box>
+                </Flex>
+              </Flex>
+            </Box>
+            <Box width={"100%"}>
+              <Flex flexDirection={"column"} justifyContent={"center"}>
+                <Text textAlign={"center"} mb={"3%"} mt={"3%"}>
+                  <b>Participantes</b>
+                </Text>
+
+              <Flex flexDirection={"row"} justifyContent={"left"} align={"center"}>
+                  
+                      <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
+                        Nome: 
+                      </Text>
+                     <Input 
+                     width={"50%"}
+                        mb={3}
+                        placeholder="Nome"
+                        backgroundColor={"#fff"}
+                        _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+                        _focus={{
+                          borderColor: "#E11F4C",
+                          boxShadow: `0 0 0 1px #E11F4C`,
+                        }}
+                        value={participantName}
+                        onChange={(e) => setParticipantName(e.target.value)}
+                      />
+                      </Flex>
+              <Flex flexDirection={"row"} justifyContent={"space-between"} align={"center"}>
+              <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
+                        R.A.
+                      </Text>
+                     <Input
+                        mb={3}
+                     width={"50%"}
+                        placeholder="R.A."
+                        backgroundColor={"#fff"}
+                        _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+                        _focus={{
+                          borderColor: "#E11F4C",
+                          boxShadow: `0 0 0 1px #E11F4C`,
+                        }}
+                        value={ra}
+                        onChange={(e) => setRa(e.target.value)}
+                      />
+                      </Flex>
+                      <Flex
+                  direction={"column"}
+                  align={"center"}
+                  justifyContent={"space-between"}
+                >
+                  <Button
+                    mt={3}
+                    backgroundColor={"#E11F4C"}
+                    color={"#FFF"}
+                    fontWeight={600}
+                    fontSize={["sm", "md"]}
+                    size={["sm", "md"]}
+                    _hover={{ backgroundColor: "#CC1C45" }}
+                    onClick={() => {
+                      handleAddParticipant(selectedEventId);
+                    }}
+                    wordBreak="break-word"
+                  >
+                    Adicionar Participante
+                  </Button>
+
+                  <Box maxHeight={"300px"} overflowY={"auto"}>
+                  <TableContainer
+                    borderWidth={1}
+                    borderColor={"#D92353"}
+                    overflow={"auto"}
+                    width={"100%"}
+                    maxHeight={"200px"}
+                  >
+                    <Table size="sm">
+                      <Thead backgroundColor={"#D92353"}>
+                        <Tr>
+                          <Th color={"white"}>Nome</Th>
+                          <Th color={"white"}>{" "}</Th>
+                          <Th color={"white"}>{" "}</Th>
+                          <Th color={"white"}>Ra</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody borderWidth={0}>
+                        {participantsList.map((participant, index) => (
+                          <Tr
+                            key={participant.ra}
+                            bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                            fontFamily="Arial"
+                            color="black"
+                            fontWeight="light"
+                          >
+                            <Td>{participant.name}</Td>
+                            <Td>{" "}</Td>
+                            <Td>{" "}</Td>
+                            <Td>{participant.ra}</Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+                  </Box>
                 </Flex>
               </Flex>
             </Box>
@@ -539,6 +674,7 @@ export default function CriarEvento() {
                             fetchGeneralVolunteersList();
                             setSelectedEventId(event.id);
                             fetchVolunteersList(event.id);
+                            fetchParticipantList(event.id);
                             setIsVolunteersOpen(true);
                           }}
                         >

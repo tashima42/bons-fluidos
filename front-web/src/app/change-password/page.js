@@ -7,6 +7,7 @@ import {
   Image,
   Input,
   InputGroup,
+  useToast,
   InputRightElement,
 } from "@chakra-ui/react";
 import Link from "next/link";
@@ -18,6 +19,7 @@ export default function ChangePassword() {
   const [show, setShow] = React.useState(false);
   const [password, setPassword] = React.useState("");
   const [newPassword, setNewPassword] = React.useState("");
+  const toast = useToast();
   const handleClick = () => setShow(!show);
   const handleConfirm = async () => {
     try {
@@ -25,9 +27,48 @@ export default function ChangePassword() {
         password: password,
         newPassword: newPassword,
       };
-      await changePassword(obj);
-    } catch (error) {
-      console.error("Erro:", error);
+      const response = await changePassword(obj);
+      
+      if (response.success === true) {
+        toast({
+          title: 'Senha alterada',
+          description: "Senha alterada com sucesso.",
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 5000);
+      } else {
+        if(response.message == "incorrect password"){
+          toast({
+            title: 'Erro',
+            description: 'Senha incorreta',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+        toast({
+          title: 'Erro',
+          description: 'Não foi possível alterar a senha. Verifique os dados e tente novamente.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+      }
+
+    } catch (message) {
+      toast({
+        title: 'Erro',
+        description: message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 

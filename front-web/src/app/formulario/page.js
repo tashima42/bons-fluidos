@@ -18,6 +18,7 @@ import {
   Input,
   ModalCloseButton,
   Select,
+  useToast
 } from "@chakra-ui/react";
 import { createVolunteer, myInfo, signOut } from "../../services/index.js";
 import { ChevronDownIcon } from "@chakra-ui/icons";
@@ -32,6 +33,8 @@ export default function Formulario() {
   const [eventDate, setEventDate] = useState("");
   const [eventName, setEventName] = useState("");
   const [isLogged, setIsLogged] = useState(false);
+  const toast = useToast();
+
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -60,17 +63,48 @@ export default function Formulario() {
 
   const handleOpenModal = () => {
     setIsOpen(true);
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 5000);
   };
   const handleCloseModal = () => {
     setIsOpen(false);
   };
 
   const handleSubmit = async (obj) => {
+    if (username == "" || phone == "" || email == "") {
+      if(selectedOption == "speaker" && eventName == "" || eventDate == ""){
+      toast({
+        title: 'Erro',
+        description: 'Por favor, preencha todos os campos necessários antes de enviar o formulário.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+      return
+    } else {
+        toast({
+          title: 'Erro',
+          description: 'Por favor, preencha todos os campos necessários antes de enviar o formulário.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+        return
+      }
+    }
+
     try {
       await createVolunteer(obj);
       handleOpenModal();
     } catch (error) {
-      console.error("Error creating volunteer:", error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possivel se inscrever',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 

@@ -53,7 +53,7 @@ export default function Sidebar({ selectedPage }) {
             },
             {
               href: "/criar-evento",
-              label: "CRIAR EVENTO",
+              label: "EVENTOS",
               index: 5,
               adminOnly: true,
             },
