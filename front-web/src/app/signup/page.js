@@ -9,11 +9,12 @@ import {
   InputGroup,
   InputRightElement,
   Select,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 import Link from "next/link";
 import { FaHome } from "react-icons/fa";
-import { signUp } from "../../services/index.js";
+import { signUp, confirmedVolunteers } from "../../services/index.js";
 
 export default function SignUp() {
   const [show, setShow] = React.useState(false);
@@ -21,15 +22,74 @@ export default function SignUp() {
   const [password, setPassword] = React.useState("");
   const [role, setRole] = React.useState("");
   const [username, setUsername] = React.useState("");
+  const toast = useToast();
 
   const handleClick = () => setShow(!show);
 
   const handleSignUp = async () => {
+    if (!email || !username || !role || !password) {
+      toast({
+        title: "Erro",
+        description:
+          "Por favor, preencha todos os campos antes de enviar o formulário.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
     try {
-      await signUp(email, username, role, password);
-      window.location.href = "/";
+      const volunteers = await confirmedVolunteers();
+
+      const emailExists = volunteers.some(
+        (volunteer) => volunteer.email === email,
+      );
+
+      if (emailExists) {
+        toast({
+          title: "Erro",
+          description: "E-mail já cadastrado.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      const response = await signUp(email, username, role, password);
+
+      if (response.success === true) {
+        toast({
+          title: "Conta criada",
+          description: "Envie os dados para o usuário!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 5000);
+      } else {
+        toast({
+          title: "Erro",
+          description:
+            "Não foi possível criar a conta. Verifique os dados e tente novamente.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
-      console.error("Erro:", error);
+      console.error("Erro durante o sign-up:", error);
+      toast({
+        title: "Não foi possível criar a conta.",
+        description: error.message || "Erro desconhecido.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -50,7 +110,7 @@ export default function SignUp() {
         <Box
           backgroundColor="#F2B7C5"
           width="30%"
-          height="80%"
+          height="90%"
           borderRadius="25px"
         >
           <Flex
@@ -105,7 +165,7 @@ export default function SignUp() {
                   onChange={(e) => setRole(e.target.value)}
                 >
                   <option value="volunteer">Voluntário</option>
-                  <option value="volunteer">Palestrante</option>
+                  <option value="speaker">Palestrante</option>
                   <option value="admin">Administrador</option>
                 </Select>
 

@@ -137,44 +137,46 @@ export default function ResultadosInscricao() {
             justifyContent={"center"}
             width={"70%"}
           >
-            <TableContainer>
-              <Table variant="simple">
-                <Thead backgroundColor={"#D92353"}>
-                  <Tr>
-                    <Th color={"white"}>nome</Th>
-                    <Th color={"white"}>telefone</Th>
-                    <Th color={"white"}>email</Th>
-                    <Th color={"white"}>tipo</Th>
-                    <Th color={"white"}>título</Th>
-                    <Th color={"white"}>data</Th>
-                  </Tr>
-                </Thead>
-                <Tbody overflow={"auto"}>
-                  {volunteers.map((volunteer, index) => (
-                    <Tr
-                      key={volunteer.id}
-                      fontFamily="Arial"
-                      color="black"
-                      fontWeight="light"
-                      bg={index % 2 === 0 ? "#FFE8EF" : "white"}
-                      onClick={() => handleOpenModal(volunteer)}
-                      _hover={{ cursor: "pointer" }}
-                    >
-                      <Td>{volunteer.name}</Td>
-                      <Td>{volunteer.phone}</Td>
-                      <Td>{volunteer.email}</Td>
-                      <Td>{volunteer.type}</Td>
-                      <Td>{volunteer.eventName}</Td>
-                      <Td>
-                        {volunteer.eventDate
-                          ? formatDateTable(volunteer.eventDate)
-                          : ""}
-                      </Td>
+            <Box maxHeight={"700px"} overflowY={"auto"}>
+              <TableContainer>
+                <Table variant="simple">
+                  <Thead backgroundColor={"#D92353"}>
+                    <Tr>
+                      <Th color={"white"}>nome</Th>
+                      <Th color={"white"}>telefone</Th>
+                      <Th color={"white"}>email</Th>
+                      <Th color={"white"}>tipo</Th>
+                      <Th color={"white"}>título</Th>
+                      <Th color={"white"}>data</Th>
                     </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
+                  </Thead>
+                  <Tbody>
+                    {volunteers.map((volunteer, index) => (
+                      <Tr
+                        key={volunteer.id}
+                        fontFamily="Arial"
+                        color="black"
+                        fontWeight="light"
+                        bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                        onClick={() => handleOpenModal(volunteer)}
+                        _hover={{ cursor: "pointer" }}
+                      >
+                        <Td>{volunteer.name}</Td>
+                        <Td>{volunteer.phone}</Td>
+                        <Td>{volunteer.email}</Td>
+                        <Td>{volunteer.type}</Td>
+                        <Td>{volunteer.eventName}</Td>
+                        <Td>
+                          {volunteer.eventDate
+                            ? formatDateTable(volunteer.eventDate)
+                            : ""}
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
           </Flex>
         </Flex>
       </Flex>

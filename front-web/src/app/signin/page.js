@@ -7,6 +7,7 @@ import {
   Image,
   Input,
   InputGroup,
+  useToast,
   InputRightElement,
 } from "@chakra-ui/react";
 import Link from "next/link";
@@ -18,13 +19,62 @@ export default function Login() {
   const [show, setShow] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const toast = useToast();
   const handleClick = () => setShow(!show);
   const handleSignin = async () => {
     try {
-      await signIn(email, password);
-      window.location.href = "/";
+      const response = await signIn(email, password);
+      if (response.token) {
+        toast({
+          title: "Usuário logado",
+          description: "Seja bem-vindo.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 5000);
+      } else {
+        if (response.message == "incorrect password") {
+          toast({
+            title: "Erro",
+            description: "Senha incorreta",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Erro",
+            description:
+              "Não foi possível entrar na conta. Verifique os dados e tente novamente.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      }
     } catch (error) {
-      console.error("Erro:", error);
+      if (error == "incorrect password") {
+        toast({
+          title: "Erro",
+          description: "Senha incorreta",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description:
+            "Não foi possível entrar na conta. Verifique os dados e tente novamente.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 

@@ -22,6 +22,25 @@ async function changePassword(obj) {
   });
 }
 
+async function addParticipant(obj) {
+  return await makeRequest("/event/participant", {
+    method: "POST",
+    body: JSON.stringify(obj),
+  });
+}
+
+async function getParticipants(eventId) {
+  return await makeRequest(`/event/${eventId}/participants`, {
+    method: "GET",
+  });
+}
+
+async function getEventsbyRA(ra) {
+  return await makeRequest(`/events/participant/${ra}`, {
+    method: "GET",
+  });
+}
+
 async function myInfo() {
   return await makeRequest("/user/me", { method: "GET" });
 }
@@ -32,6 +51,10 @@ async function signOut() {
 
 async function events() {
   return await makeRequest("/events", { method: "GET" });
+}
+
+async function getEvent(id) {
+  return await makeRequest(`/event/${id}`, { method: "GET" });
 }
 
 async function formsVolunteers() {
@@ -101,6 +124,7 @@ export {
   deleteEvent,
   createVolunteer,
   eventVolunteers,
+  getEvent,
   formsVolunteers,
   addVolunteerToEvent,
   signOut,
@@ -108,4 +132,7 @@ export {
   changePassword,
   confirmedVolunteers,
   deleteVolunteer,
+  addParticipant,
+  getParticipants,
+  getEventsbyRA,
 };

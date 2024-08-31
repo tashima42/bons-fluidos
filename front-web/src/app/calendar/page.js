@@ -5,7 +5,8 @@ import { FaUserAlt, FaCheckCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Calendar from "react-calendar";
-import { FaPlus } from "react-icons/fa6";
+import { PDFDownloadLink, Document, Page } from "@react-pdf/renderer";
+import Certificado from "../certificado";
 import {
   Modal,
   ModalOverlay,
@@ -14,14 +15,26 @@ import {
   ModalBody,
   Menu,
   MenuButton,
+  Table,
+  TableContainer,
+  Td,
+  Tr,
   MenuList,
+  Thead,
+  Th,
+  Tbody,
   MenuItem,
   Input,
   ModalCloseButton,
 } from "@chakra-ui/react";
 import "./style.css";
 import { events } from "../../services/index.js";
-import { myInfo, signOut } from "../../services/index.js";
+import {
+  myInfo,
+  signOut,
+  getEventsbyRA,
+  getEvent,
+} from "../../services/index.js";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function Calendario() {
@@ -32,6 +45,9 @@ export default function Calendario() {
   const [eventsList, setEventsList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [filteredEvents, setFilteredEvents] = useState([]);
+  const [ra, setRa] = useState("");
+  const [EventsByRaList, setEventsByRaList] = useState([]);
+  const [raInfo, setRaInfo] = useState([]);
   const [isLogged, setIsLogged] = useState(false);
 
   useEffect(() => {
@@ -96,6 +112,33 @@ export default function Calendario() {
     return `${year}-${month}-${day}`;
   }
 
+  const fetchDetailedEvents = async (raNumber) => {
+    try {
+      const data = await getEventsbyRA(raNumber);
+
+      const eventIds = data.map((event) => event.event_id);
+
+      const eventDetails = await Promise.all(
+        eventIds.map(async (id) => {
+          try {
+            return await getEvent(id);
+          } catch (err) {
+            console.error(
+              `Error fetching details for event ID ${id}:`,
+              err.message,
+            );
+            return null;
+          }
+        }),
+      );
+      const validEventDetails = eventDetails.filter((event) => event !== null);
+      setEventsByRaList(validEventDetails);
+      setRaInfo(data);
+    } catch (err) {
+      console.error("Error fetching events by RA:", err.message);
+    }
+  };
+
   const handleDateClick = (date) => {
     setSelectedDate(date);
     const selectedDate = getDateOnly(date);
@@ -108,16 +151,26 @@ export default function Calendario() {
     setIsOpen(true);
   };
 
+
   const handleCloseModal = () => {
     setIsOpen(false);
   };
-  const handleCloseConfirmModal = () => {
-    setIsOpen(false);
-    setIsConfirmed(false);
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    };
+
+    return date.toLocaleString("pt-BR", options);
   };
-  const handleOpenConfirmModal = () => {
-    setIsConfirmed(true);
-  };
+
   const isHighlighted = (date) => {
     return highlightedDates.some(
       (d) =>
@@ -212,6 +265,8 @@ export default function Calendario() {
               <Input
                 placeholder="Insira seu R.A."
                 backgroundColor={"#F2F2F2"}
+                value={ra}
+                onChange={(e) => setRa(e.target.value)}
               />
               <Button
                 backgroundColor={"#E11F4C"}
@@ -220,10 +275,63 @@ export default function Calendario() {
                 borderRadius={15}
                 fontWeight={600}
                 _hover={{ backgroundColor: "#CC1C45" }}
+                onClick={() => fetchDetailedEvents(ra)}
               >
                 Buscar
               </Button>
             </Flex>
+            <Box maxHeight={"300px"} overflowY={"auto"}>
+              <TableContainer
+                borderWidth={1}
+                borderColor={"#D92353"}
+                overflow={"auto"}
+                width={"100%"}
+                maxHeight={"200px"}
+              >
+                <Table size="sm">
+                  <Thead backgroundColor={"#D92353"}>
+                    <Tr>
+                      <Th color={"white"}>Palestra</Th>
+                      <Th color={"white"}>Data</Th>
+                      <Th color={"white"}>{"-"}</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody borderWidth={0}>
+                    {EventsByRaList.map((event, index) => (
+                      <Tr
+                        key={event.id}
+                        bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                        fontFamily="Arial"
+                        color="black"
+                        fontWeight="light"
+                      >
+                        <Td>{event.name}</Td>
+                        <Td>{formatDate(event.startDate)}</Td>
+                        <Td _hover={{ cursor: "pointer" }} color={"#E11F4C"}>
+                          <PDFDownloadLink
+                            document={
+                              <Certificado
+                                date={formatDate(event.startDate)}
+                                name={
+                                  raInfo[0].name ? raInfo[0].name : "Seu Nome"
+                                }
+                                ra={raInfo[0].ra ? raInfo[0].ra : "Seu RA"}
+                                eventTitle={event.name}
+                              />
+                            }
+                            fileName="certificado.pdf"
+                          >
+                            {({ blob, url, loading, error }) =>
+                              loading ? "Carregando..." : "Baixar"
+                            }
+                          </PDFDownloadLink>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
           </Flex>
         </Flex>
       </Flex>
