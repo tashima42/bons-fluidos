@@ -1,10 +1,8 @@
-# bons-fluidos
+# Bons Fluidos - Grupo 1
 
 Documentação da API: https://documenter.getpostman.com/view/13233153/2sA3rwMuDD
 
-## Versão hospedada:
-
-https://bons-fluidos.tashima.space
+Versão hospedada: https://bons-fluidos.tashima.space
 
 ## Ferramentas e versões
 
