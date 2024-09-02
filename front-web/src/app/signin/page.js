@@ -35,14 +35,14 @@ export default function Login() {
 
         setTimeout(() => {
           window.location.href = "/";
-        }, 5000);
+        }, 3000);
       } else {
         if (response.message == "incorrect password") {
           toast({
             title: "Erro",
             description: "Senha incorreta",
             status: "error",
-            duration: 5000,
+            duration: 3000,
             isClosable: true,
           });
         } else {
@@ -51,7 +51,7 @@ export default function Login() {
             description:
               "Não foi possível entrar na conta. Verifique os dados e tente novamente.",
             status: "error",
-            duration: 5000,
+            duration: 3000,
             isClosable: true,
           });
         }
@@ -62,7 +62,7 @@ export default function Login() {
           title: "Erro",
           description: "Senha incorreta",
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       } else {
@@ -71,7 +71,7 @@ export default function Login() {
           description:
             "Não foi possível entrar na conta. Verifique os dados e tente novamente.",
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }

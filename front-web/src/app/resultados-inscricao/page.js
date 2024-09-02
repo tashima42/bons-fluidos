@@ -164,7 +164,11 @@ export default function ResultadosInscricao() {
                         <Td>{volunteer.name}</Td>
                         <Td>{volunteer.phone}</Td>
                         <Td>{volunteer.email}</Td>
-                        <Td>{volunteer.type}</Td>
+                        <Td>
+                          {volunteer.type == "speaker"
+                            ? "Palestrante"
+                            : "Voluntário"}
+                        </Td>
                         <Td>{volunteer.eventName}</Td>
                         <Td>
                           {volunteer.eventDate

@@ -23,6 +23,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useToast,
   TableContainer,
   ModalCloseButton,
 } from "@chakra-ui/react";
@@ -38,10 +39,19 @@ import {
   deleteVolunteer,
   formsVolunteers,
   signOut,
-  addParticipant, getParticipants
+  addParticipant,
+  getParticipants,
 } from "../../services/index.js";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+
+export function localDateTime(datetime) {
+  const saveDate = new Date(datetime);
+  const offset = saveDate.getTimezoneOffset();
+  saveDate.setMinutes(saveDate.getMinutes() - offset);
+
+  return saveDate.toISOString();
+}
 
 export default function CriarEvento() {
   const [title, setTitle] = useState("");
@@ -70,12 +80,18 @@ export default function CriarEvento() {
   const [eventVolunteersList, setEventVolunteersList] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState();
   const [isLogged, setIsLogged] = useState(false);
+  const [isVolunteer, setIsVolunteer] = useState(false);
+  const [isMyEvent, setIsMyEvent] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     const fetchInfo = async () => {
       try {
         const user = await myInfo();
-        if (user) setIsLogged(true);
+        if (user) {
+          setIsLogged(true);
+          setIsVolunteer(user.role === "volunteer" ? true : false);
+        }
       } catch {
         setIsLogged(false);
       }
@@ -105,10 +121,6 @@ export default function CriarEvento() {
     };
 
     fetchEventDetails();
-
-    myInfo()
-      .then((data) => console.log(data))
-      .catch((err) => console.log(err.message));
   }, []);
 
   const fetchVolunteersList = async (id) => {
@@ -116,13 +128,6 @@ export default function CriarEvento() {
       const eventVolunteersData = await eventVolunteers(id);
 
       const allVolunteers = await formsVolunteers();
-
-      if (
-        !Array.isArray(eventVolunteersData) ||
-        !Array.isArray(allVolunteers)
-      ) {
-        throw new Error("Os dados recebidos não são arrays.");
-      }
 
       const eventVolunteersMap = new Map(
         eventVolunteersData.map((volunteer) => [volunteer.email, volunteer]),
@@ -142,7 +147,6 @@ export default function CriarEvento() {
         .filter((volunteer) => volunteer !== null);
 
       setEventVolunteersList(filteredVolunteers);
-      console.log(filteredVolunteers);
     } catch (err) {
       setEventVolunteersList([]);
     }
@@ -153,17 +157,33 @@ export default function CriarEvento() {
       const data = await confirmedVolunteers();
       const volunteers = data.map((volunteer) => volunteer);
       setVolunteersList(volunteers);
-    } catch (err) {
-      console.error("Error fetching events:", err.message);
-    }
+    } catch (err) {}
   };
 
   const handleCreateEvent = async (event) => {
     try {
-      await createEvent(event);
-      setIsConfirmed(true);
+      const response = await createEvent(event);
+      if (response.success == true) {
+        setIsConfirmed(true);
+      } else {
+        toast({
+          title: "Erro",
+          description:
+            "Erro ao criar evento, verifique se preencheu todos os dados e/ou tente novamente mais tarde.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
-      console.error("Error creating event:", error);
+      toast({
+        title: "Erro",
+        description:
+          "Erro ao criar evento, verifique os dados e/ou tente novamente mais tarde.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -172,7 +192,14 @@ export default function CriarEvento() {
       await addVolunteerToEvent(eventId, volunteerId);
       fetchVolunteersList(eventId);
     } catch (error) {
-      console.error("Error adding volunteer:", error);
+      toast({
+        title: "Erro",
+        description:
+          "Erro ao adicionar voluntário, tente novamente mais tarde.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -182,7 +209,14 @@ export default function CriarEvento() {
       const participants = data.map((participant) => participant);
       setParticipantsList(participants);
     } catch (err) {
-      console.error("Error fetching participants:", err.message);
+      toast({
+        title: "Erro",
+        description:
+          "Erro ao carregar participantes, tente novamente mais tarde.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -191,13 +225,29 @@ export default function CriarEvento() {
       const obj = {
         name: participantName,
         ra: ra,
-        event_id: eventId
+        event_id: eventId,
+      };
+      const response = await addParticipant(obj);
+      if (response.success == true) fetchParticipantList(eventId);
+      else {
+        toast({
+          title: "Erro",
+          description:
+            "Erro ao adicionar participante, verifique se preencheu todos os dados ou tente novamente mais tarde.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       }
-      await addParticipant(obj);
-      console.log(eventId)
-      fetchParticipantList(eventId);
     } catch (error) {
-      console.error("Error adding participant:", error);
+      toast({
+        title: "Erro",
+        description:
+          "Erro ao adicionar participante, verifique se preencheu todos os dados ou tente novamente mais tarde.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -206,25 +256,46 @@ export default function CriarEvento() {
       await deleteVolunteer(eventId, volunteerId);
       fetchVolunteersList(eventId);
     } catch (error) {
-      console.error("Error removing volunteer:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao deletar voluntário, tente novamente mais tarde.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
-  
-
   const handleDeleteEvent = async (id) => {
     try {
-      await deleteEvent(id);
-      setEventsList((prevEvents) =>
-        prevEvents.filter((event) => event.id !== id),
-      );
-      setFilteredEvents((prevEvents) =>
-        prevEvents.filter((event) => event.id !== id),
-      );
-      window.location.reload();
+      const response = await deleteEvent(id);
+      if (response.success == true) {
+        setEventsList((prevEvents) =>
+          prevEvents.filter((event) => event.id !== id),
+        );
+        setFilteredEvents((prevEvents) =>
+          prevEvents.filter((event) => event.id !== id),
+        );
+        window.location.reload();
+      }
+      {
+        toast({
+          title: "Erro",
+          description: "Erro ao deletar evento, tente novamente mais tarde.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
       setIsOpen(false);
     } catch (error) {
-      console.error("Error deleting event:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao deletar evento, tente novamente mais tarde.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -332,7 +403,17 @@ export default function CriarEvento() {
               locale={"pt-BR"}
               onClickDay={(date) => {
                 setSelectedDate(date);
-                console.log(date);
+                const saveDate = new Date(date);
+                const now = new Date();
+                const currentHours = now.getHours();
+                const currentMinutes = now.getMinutes();
+                saveDate.setHours(currentHours, currentMinutes);
+                const offset = saveDate.getTimezoneOffset();
+                saveDate.setMinutes(saveDate.getMinutes() - offset);
+
+                const formattedDate = saveDate.toISOString().slice(0, 16);
+                setStartDate(formattedDate);
+                setEndDate(formattedDate);
                 setIsOpen(true);
               }}
             />
@@ -352,139 +433,151 @@ export default function CriarEvento() {
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Box width={"100%"} overflow={"auto"}>
-              <Flex flexDirection={"column"} justifyContent={"center"}>
-                <Text textAlign={"center"} mb={"3%"}>
-                  <b>Voluntários/Palestrantes</b>
-                </Text>
-                <Flex
-                  direction={"column"}
-                  align={"center"}
-                  justifyContent={"space-between"}
-                >
-                  <Select
-                    placeholder="Selecionar"
-                    backgroundColor={"white"}
-                    value={volunteerId}
-                    onChange={(e) => setVolunteerId(e.target.value)}
+            {isVolunteer === false ? (
+              <Box width={"100%"} overflow={"auto"}>
+                <Flex flexDirection={"column"} justifyContent={"center"}>
+                  <Text textAlign={"center"} mb={"3%"}>
+                    <b>Voluntários/Palestrantes</b>
+                  </Text>
+                  <Flex
+                    direction={"column"}
+                    align={"center"}
+                    justifyContent={"space-between"}
                   >
-                    {volunteersList.map((volunteer) => (
-                      <option value={volunteer.id}>
-                        {volunteer.name} - {volunteer.email}
-                      </option>
-                    ))}
-                  </Select>
-                  <Button
-                    mt={3}
-                    backgroundColor={"#E11F4C"}
-                    color={"#FFF"}
-                    fontWeight={600}
-                    fontSize={["sm", "md"]}
-                    size={["sm", "md"]}
-                    _hover={{ backgroundColor: "#CC1C45" }}
-                    onClick={() => {
-                      handleAddVolunteer(selectedEventId, volunteerId);
-                    }}
-                    wordBreak="break-word"
-                  >
-                    Adicionar Voluntário/Palestrante
-                  </Button>
-                  <Box maxHeight={"300px"} overflowY={"auto"}>
-                  <TableContainer
-                    borderWidth={1}
-                    borderColor={"#D92353"}
-                    overflow={"auto"}
-                    width={"100%"}
-                    maxHeight={"200px"}
-                  >
-                    <Table size="sm">
-                      <Thead backgroundColor={"#D92353"}>
-                        <Tr>
-                          <Th color={"white"}>Nome</Th>
-                          <Th color={"white"}>Telefone</Th>
-                          <Th color={"white"}>Email</Th>
-                          <Th color={"white"}>-</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody borderWidth={0}>
-                        {eventVolunteersList.map((volunteer, index) => (
-                          <Tr
-                            key={volunteer.id}
-                            bg={index % 2 === 0 ? "#FFE8EF" : "white"}
-                            fontFamily="Arial"
-                            color="black"
-                            fontWeight="light"
-                          >
-                            <Td>{volunteer.name}</Td>
-                            <Td>{volunteer.phone}</Td>
-                            <Td>{volunteer.email}</Td>
-                            <Td
-                              _hover={{ cursor: "pointer" }}
-                              color={"#E11F4C"}
-                              onClick={() =>
-                                handleRemoveVolunteer(
-                                  selectedEventId,
-                                  volunteer.eventVolunteerId,
-                                )
-                              }
-                            >
-                              Remover
-                            </Td>
-                          </Tr>
-                        ))}
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
-                  </Box>
+                    <Select
+                      placeholder="Selecionar"
+                      backgroundColor={"white"}
+                      value={volunteerId}
+                      onChange={(e) => setVolunteerId(e.target.value)}
+                    >
+                      {volunteersList.map((volunteer) => (
+                        <option value={volunteer.id}>
+                          {volunteer.name} - {volunteer.email}
+                        </option>
+                      ))}
+                    </Select>
+                    <Button
+                      mt={3}
+                      backgroundColor={"#E11F4C"}
+                      color={"#FFF"}
+                      fontWeight={600}
+                      fontSize={["sm", "md"]}
+                      size={["sm", "md"]}
+                      _hover={{ backgroundColor: "#CC1C45" }}
+                      onClick={() => {
+                        handleAddVolunteer(selectedEventId, volunteerId);
+                      }}
+                      wordBreak="break-word"
+                    >
+                      Adicionar Voluntário/Palestrante
+                    </Button>
+                    <Box maxHeight={"300px"} overflowY={"auto"}>
+                      <TableContainer
+                        borderWidth={1}
+                        borderColor={"#D92353"}
+                        overflow={"auto"}
+                        width={"100%"}
+                        maxHeight={"200px"}
+                      >
+                        <Table size="sm">
+                          <Thead backgroundColor={"#D92353"}>
+                            <Tr>
+                              <Th color={"white"}>Nome</Th>
+                              <Th color={"white"}>Telefone</Th>
+                              <Th color={"white"}>Email</Th>
+                              <Th color={"white"}>-</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody borderWidth={0}>
+                            {eventVolunteersList.map((volunteer, index) => (
+                              <Tr
+                                key={volunteer.id}
+                                bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                                fontFamily="Arial"
+                                color="black"
+                                fontWeight="light"
+                              >
+                                <Td>{volunteer.name}</Td>
+                                <Td>{volunteer.phone}</Td>
+                                <Td>{volunteer.email}</Td>
+                                <Td
+                                  _hover={{ cursor: "pointer" }}
+                                  color={"#E11F4C"}
+                                  onClick={() =>
+                                    handleRemoveVolunteer(
+                                      selectedEventId,
+                                      volunteer.eventVolunteerId,
+                                    )
+                                  }
+                                >
+                                  Remover
+                                </Td>
+                              </Tr>
+                            ))}
+                          </Tbody>
+                        </Table>
+                      </TableContainer>
+                    </Box>
+                  </Flex>
                 </Flex>
-              </Flex>
-            </Box>
+              </Box>
+            ) : null}
             <Box width={"100%"}>
               <Flex flexDirection={"column"} justifyContent={"center"}>
                 <Text textAlign={"center"} mb={"3%"} mt={"3%"}>
                   <b>Participantes</b>
                 </Text>
-                <Flex flexDirection={"row"} justifyContent={"center"} align={"center"}>
-
-              <Flex flexDirection={"row"} justifyContent={"center"} align={"center"}>
-                  
-                      <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
-                        Nome: 
-                      </Text>
-                     <Input 
-                     width={"50%"}
-                        mb={3}
-                        placeholder="Nome"
-                        backgroundColor={"#fff"}
-                        _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                        _focus={{
-                          borderColor: "#E11F4C",
-                          boxShadow: `0 0 0 1px #E11F4C`,
-                        }}
-                        value={participantName}
-                        onChange={(e) => setParticipantName(e.target.value)}
-                      />
-                      </Flex>
-              <Flex flexDirection={"row"} justifyContent={"center"} align={"center"} >
-              <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
-                        R.A.:
-                      </Text>
-                     <Input
-                        mb={3}
-                     width={"50%"}
-                        placeholder="R.A."
-                        backgroundColor={"#fff"}
-                        _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
-                        _focus={{
-                          borderColor: "#E11F4C",
-                          boxShadow: `0 0 0 1px #E11F4C`,
-                        }}
-                        value={ra}
-                        onChange={(e) => setRa(e.target.value)}
-                      />
-                      </Flex>
-                      </Flex>
-                      <Flex
+                <Flex
+                  flexDirection={"row"}
+                  justifyContent={"center"}
+                  align={"center"}
+                >
+                  <Flex
+                    flexDirection={"row"}
+                    justifyContent={"center"}
+                    align={"center"}
+                  >
+                    <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
+                      Nome:
+                    </Text>
+                    <Input
+                      width={"50%"}
+                      mb={3}
+                      placeholder="Nome"
+                      backgroundColor={"#fff"}
+                      _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+                      _focus={{
+                        borderColor: "#E11F4C",
+                        boxShadow: `0 0 0 1px #E11F4C`,
+                      }}
+                      value={participantName}
+                      onChange={(e) => setParticipantName(e.target.value)}
+                    />
+                  </Flex>
+                  <Flex
+                    flexDirection={"row"}
+                    justifyContent={"center"}
+                    align={"center"}
+                  >
+                    <Text mb="8px" textAlign={"left"} fontWeight={600} mr={3}>
+                      R.A.:
+                    </Text>
+                    <Input
+                      mb={3}
+                      width={"50%"}
+                      placeholder="R.A."
+                      backgroundColor={"#fff"}
+                      _hover={{ borderColor: "#E11F4C", borderWidth: 1.5 }}
+                      _focus={{
+                        borderColor: "#E11F4C",
+                        boxShadow: `0 0 0 1px #E11F4C`,
+                      }}
+                      value={ra}
+                      onChange={(e) => setRa(e.target.value)}
+                    />
+                  </Flex>
+                </Flex>
+                <Flex
                   direction={"column"}
                   align={"center"}
                   justifyContent={"space-between"}
@@ -506,40 +599,40 @@ export default function CriarEvento() {
                   </Button>
 
                   <Box maxHeight={"300px"} overflowY={"auto"}>
-                  <TableContainer
-                    borderWidth={1}
-                    borderColor={"#D92353"}
-                    overflow={"auto"}
-                    width={"100%"}
-                    maxHeight={"200px"}
-                  >
-                    <Table size="sm">
-                      <Thead backgroundColor={"#D92353"}>
-                        <Tr>
-                          <Th color={"white"}>Nome</Th>
-                          <Th color={"white"}>{" "}</Th>
-                          <Th color={"white"}>{" "}</Th>
-                          <Th color={"white"}>Ra</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody borderWidth={0}>
-                        {participantsList.map((participant, index) => (
-                          <Tr
-                            key={participant.ra}
-                            bg={index % 2 === 0 ? "#FFE8EF" : "white"}
-                            fontFamily="Arial"
-                            color="black"
-                            fontWeight="light"
-                          >
-                            <Td>{participant.name}</Td>
-                            <Td>{" "}</Td>
-                            <Td>{" "}</Td>
-                            <Td>{participant.ra}</Td>
+                    <TableContainer
+                      borderWidth={1}
+                      borderColor={"#D92353"}
+                      overflow={"auto"}
+                      width={"100%"}
+                      maxHeight={"200px"}
+                    >
+                      <Table size="sm">
+                        <Thead backgroundColor={"#D92353"}>
+                          <Tr>
+                            <Th color={"white"}>Nome</Th>
+                            <Th color={"white"}> </Th>
+                            <Th color={"white"}> </Th>
+                            <Th color={"white"}>Ra</Th>
                           </Tr>
-                        ))}
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
+                        </Thead>
+                        <Tbody borderWidth={0}>
+                          {participantsList.map((participant, index) => (
+                            <Tr
+                              key={participant.ra}
+                              bg={index % 2 === 0 ? "#FFE8EF" : "white"}
+                              fontFamily="Arial"
+                              color="black"
+                              fontWeight="light"
+                            >
+                              <Td>{participant.name}</Td>
+                              <Td> </Td>
+                              <Td> </Td>
+                              <Td>{participant.ra}</Td>
+                            </Tr>
+                          ))}
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
                   </Box>
                 </Flex>
               </Flex>
@@ -636,20 +729,22 @@ export default function CriarEvento() {
                           <Text>
                             <b>Título:</b> {event.name}
                           </Text>
-                          <Button
-                            variant={"ghost"}
-                            height={"15px"}
-                            color={"#E11F4C"}
-                            _hover={{
-                              backgroundColor: "transparent",
-                              color: "#B7193E",
-                            }}
-                            onClick={() => {
-                              handleDeleteEvent(event.id);
-                            }}
-                          >
-                            Excluir
-                          </Button>
+                          {isVolunteer === false ? (
+                            <Button
+                              variant={"ghost"}
+                              height={"15px"}
+                              color={"#E11F4C"}
+                              _hover={{
+                                backgroundColor: "transparent",
+                                color: "#B7193E",
+                              }}
+                              onClick={() => {
+                                handleDeleteEvent(event.id);
+                              }}
+                            >
+                              Excluir
+                            </Button>
+                          ) : null}
                         </Flex>
                         <Text>
                           <b>Palestrante:</b> {event.speaker.name}
@@ -693,21 +788,22 @@ export default function CriarEvento() {
                     </Text>
                   )}
                 </Flex>
-
-                <Button
-                  backgroundColor={"#E11F4C"}
-                  color={"#FFF"}
-                  fontWeight={600}
-                  fontSize={["md", "lg"]}
-                  size={["sm", "md"]}
-                  _hover={{ backgroundColor: "#CC1C45" }}
-                  hidden={createEventButton ? true : false}
-                  onClick={() => {
-                    setCreateEventButton(true);
-                  }}
-                >
-                  Criar Evento
-                </Button>
+                {isVolunteer === false ? (
+                  <Button
+                    backgroundColor={"#E11F4C"}
+                    color={"#FFF"}
+                    fontWeight={600}
+                    fontSize={["md", "lg"]}
+                    size={["sm", "md"]}
+                    _hover={{ backgroundColor: "#CC1C45" }}
+                    hidden={createEventButton ? true : false}
+                    onClick={() => {
+                      setCreateEventButton(true);
+                    }}
+                  >
+                    Criar Evento
+                  </Button>
+                ) : null}
                 {createEventButton ? (
                   <>
                     <Flex direction={"column"}>
@@ -752,10 +848,11 @@ export default function CriarEvento() {
                           <Input
                             mb={3}
                             backgroundColor={"white"}
-                            placeholder="Selecione a data e o horário"
+                            placeholder="Início"
                             size="md"
                             type="datetime-local"
                             value={startDate}
+                            min={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                           />
                         </Flex>
@@ -766,10 +863,11 @@ export default function CriarEvento() {
                           <Input
                             mb={3}
                             backgroundColor={"white"}
-                            placeholder="Selecione a data e o horário"
+                            placeholder="Fim"
                             size="md"
                             type="datetime-local"
                             value={endDate}
+                            min={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
                           />
                         </Flex>
@@ -877,8 +975,8 @@ export default function CriarEvento() {
                   name: title,
                   description,
                   location,
-                  startDate: new Date(startDate).toISOString(),
-                  endDate: new Date(endDate).toISOString(),
+                  startDate: localDateTime(startDate),
+                  endDate: localDateTime(endDate),
                   speaker: {
                     name,
                     phoneNumber: phone,

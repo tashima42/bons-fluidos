@@ -40,7 +40,6 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 export default function Calendario() {
   const [value, onChange] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
   const [highlightedDates, setHighlightedDates] = useState([]);
   const [eventsList, setEventsList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -151,25 +150,32 @@ export default function Calendario() {
     setIsOpen(true);
   };
 
-
   const handleCloseModal = () => {
     setIsOpen(false);
   };
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
+  function formatDate(isoDate) {
+    const [datePart, timePart] = isoDate.split("T");
+    const [year, month, day] = datePart.split("-");
+    const [hour, minute] = timePart.replace("Z", "").split(":");
 
-    const options = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    };
+    const monthNames = [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ];
 
-    return date.toLocaleString("pt-BR", options);
-  };
+    return `${day} de ${monthNames[parseInt(month, 10) - 1]} de ${year} ${hour}:${minute}`;
+  }
 
   const isHighlighted = (date) => {
     return highlightedDates.some(

@@ -22,6 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { createVolunteer, myInfo, signOut } from "../../services/index.js";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+import { localDateTime } from "../criar-evento/page.js";
 
 export default function Formulario() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,33 +72,19 @@ export default function Formulario() {
   };
 
   const handleSubmit = async (obj) => {
-    if (username == "" || phone == "" || email == "") {
-      if ((selectedOption == "speaker" && eventName == "") || eventDate == "") {
-        toast({
-          title: "Erro",
-          description:
-            "Por favor, preencha todos os campos necessários antes de enviar o formulário.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-        return;
-      } else {
-        toast({
-          title: "Erro",
-          description:
-            "Por favor, preencha todos os campos necessários antes de enviar o formulário.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-        return;
-      }
-    }
-
     try {
-      await createVolunteer(obj);
-      handleOpenModal();
+      const response = await createVolunteer(obj);
+      if (response.success == true) handleOpenModal();
+      else {
+        toast({
+          title: "Erro",
+          description:
+            "Erro ao enviar formulário, verifique se preencheu todos os dados corretamente ou tente novamente mais tarde.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
       toast({
         title: "Erro",
@@ -308,7 +295,7 @@ export default function Formulario() {
                       phone: phone,
                       type: "speaker",
                       eventName: eventName,
-                      eventDate: formatDate(eventDate),
+                      eventDate: localDateTime(eventDate),
                     };
                     handleSubmit(obj);
                   }}

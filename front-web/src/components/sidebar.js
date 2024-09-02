@@ -7,14 +7,17 @@ import { useEffect, useState } from "react";
 
 export default function Sidebar({ selectedPage }) {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isVolunteer, setIsVolunteer] = useState(false);
 
   useEffect(() => {
     const fetchInfo = async () => {
       try {
         const user = await myInfo();
         setIsAdmin(user.role === "admin");
+        setIsVolunteer(user.role === "volunteer" ? true : false);
       } catch {
         setIsAdmin(false);
+        setIsVolunteer(false);
       }
     };
     fetchInfo();
@@ -37,8 +40,8 @@ export default function Sidebar({ selectedPage }) {
         <Flex flexDirection="column" gap={3}>
           {[
             { href: "/", label: "HOME", index: 0 },
-            { href: "/calendar", label: "PALESTRAS", index: 1 },
-            { href: "/inscricao", label: "INSCRIÇÃO", index: 2 },
+            { href: "/calendar", label: "CALENDÁRIO DE EVENTOS", index: 1 },
+            { href: "/inscricao", label: "INSCREVA-SE", index: 2 },
             {
               href: "/resultados-inscricao",
               label: "RESULTADOS DA INSCRIÇÃO",
@@ -47,18 +50,21 @@ export default function Sidebar({ selectedPage }) {
             },
             {
               href: "/signup",
-              label: "CRIAR CONTA",
+              label: "CRIAR UMA CONTA",
               index: 4,
               adminOnly: true,
             },
             {
               href: "/criar-evento",
-              label: "EVENTOS",
+              label: "GERENCIAR EVENTOS",
               index: 5,
-              adminOnly: true,
+              adminAndVolunteer: true,
             },
-          ].map(({ href, label, index, adminOnly }) => {
+          ].map(({ href, label, index, adminOnly, adminAndVolunteer }) => {
             if (adminOnly && !isAdmin) return null;
+            if (adminAndVolunteer && !isVolunteer) {
+              if (!isAdmin) return null;
+            }
             return (
               <Link href={href} passHref key={index}>
                 <Button
