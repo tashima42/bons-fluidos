@@ -14,7 +14,9 @@ Versão hospedada: https://bons-fluidos.tashima.space
 - [GNU Make 3.81](https://www.gnu.org/software/make/)
 
 ## Como compilar e executar
+
 Clonar o repositório Git:
+
 ```
 git clone https://github.com/tashima42/bons-fluidos
 ```
